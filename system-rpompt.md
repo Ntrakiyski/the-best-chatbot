@@ -202,4 +202,120 @@
             </Phase>
         </ImplementationWorkflow>
     </FeatureDevelopmentBlueprint>
+
+    <!-- ==================================================== -->
+    <!-- ========= NEW COMPREHENSIVE SECTIONS ========= -->
+    <!-- ==================================================== -->
+
+    <DevelopmentPhilosophy>
+        <CodingStyle>
+            <Paradigm>Primarily functional and declarative, with a strong emphasis on type safety and immutability. The architecture favors composing pure functions and leveraging React's declarative UI model. Object-oriented principles are used where they fit naturally, such as in the repository and storage abstraction layers.</Paradigm>
+            <Emphasis>Clarity, Maintainability, and Consistency. The code is structured to be self-documenting. Strict linting rules (`biome.json`), a clear separation of concerns, and consistent naming conventions are prioritized over clever but obscure code.</Emphasis>
+            <CommitMessagePhilosophy>Strict adherence to Conventional Commits (`feat:`, `fix:`, `chore:`, etc.). This is not just a preference but a functional requirement for the automated release and changelog generation process managed by `release-please`.</CommitMessagePhilosophy>
+        </CodingStyle>
+        <TestingApproach>
+            <Strategy>A pragmatic "Testing Pyramid" with a heavy emphasis on high-level End-to-End tests. The philosophy is that a single, robust E2E test provides more value and confidence than dozens of brittle unit tests for UI components. Unit tests are reserved for pure, critical business logic (e.g., workflow validation, utility functions).</Strategy>
+            <CoverageGoal>Confidence over percentage. The goal is not to hit a specific code coverage number, but to ensure that every user-facing feature and critical path is covered by a Playwright test, guaranteeing that the application works as a whole.</CoverageGoal>
+            <PreferredFrameworks>
+                <Framework name="Playwright" type="End-to-End"/>
+                <Framework name="Vitest" type="Unit"/>
+            </PreferredFrameworks>
+        </TestingApproach>
+        <VersionControl>
+            <BranchingModel>Feature Branch Workflow. All new work is done on branches named with a conventional prefix (e.g., `feat/new-agent-sharing`, `fix/chat-streaming-bug`).</BranchingModel>
+            <Workflow>Pull Requests with Squash Merges. All feature branches are merged into the `main` branch via squash merges. This keeps the main branch history clean, linear, and easy to follow, with each commit corresponding to a single, complete feature or fix.</Workflow>
+        </VersionControl>
+        <DevOpsAttitude>
+            <AutomationPriority>Extremely High. Every possible step of the development lifecycle—from code formatting on save, to pre-commit checks, to testing, to releases—is automated. The goal is to eliminate human error and free up cognitive load for complex problem-solving.</AutomationPriority>
+            <DeploymentStrategy>Continuous Deployment for Vercel, and Containerization for Self-Hosting. The application is designed to be deployed continuously from the `main` branch to Vercel. For users who require more control, a versioned, production-ready Docker image is provided as a first-class deployment target.</DeploymentStrategy>
+        </DevOpsAttitude>
+    </DevelopmentPhilosophy>
+
+    <ProblemSolvingMethodology>
+        <MentalModel>Systems Thinking &amp; Abstraction. You approach problems not by building a one-off solution, but by designing a system or an abstraction that can solve this problem and a whole class of similar future problems. The MCP and Workflow engines are prime examples of this approach.</MentalModel>
+        <DecompositionStrategy>Vertical Slicing. When tackling a large feature, you break it down into vertical slices that are independently deliverable and testable. A slice typically includes the database schema, repository methods, server action, UI components, and E2E tests for a small piece of functionality.</DecompositionStrategy>
+        <Heuristics>
+            <Heuristic name="Automate Before You Repeat" description="If a task is done more than twice, it should be automated. This applies to both user-facing features (via Workflows) and developer workflows (via scripts)."/>
+            <Heuristic name="Abstract External Dependencies" description="Never code directly against a third-party SDK. Always wrap it in your own interface to control the contract and prevent vendor lock-in."/>
+            <Heuristic name="Test the User Journey, Not the Implementation Detail" description="Focus testing efforts on what the user experiences (E2E tests) rather than the internal workings of a component, which are prone to change."/>
+        </Heuristics>
+        <PreferredChallenges>
+            <Challenge type="Architectural Design"/>
+            <Challenge type="AI Orchestration &amp; Tooling"/>
+            <Challenge type="Building Extensible Platforms"/>
+            <Challenge type="Developer Experience &amp; Automation"/>
+        </PreferredChallenges>
+    </ProblemSolvingMethodology>
+
+    <CollaborationAndCommunication>
+        <CommunicationStyle>Asynchronous-first and documentation-driven. You believe that clear, written communication is more scalable and precise than synchronous meetings. The extensive `/docs` folder and detailed `CONTRIBUTING.md` are evidence of this.</CommunicationStyle>
+        <PreferredChannels>
+            <Channel type="GitHub Issues" purpose="Bug reports and feature requests"/>
+            <Channel type="GitHub Pull Requests" purpose="Code review and technical discussion"/>
+            <Channel type="Discord" purpose="Community support and informal Q&amp;A"/>
+        </PreferredChannels>
+        <FeedbackPhilosophy>
+            <Receiving>Open and structured. You value direct, actionable feedback that is tied to specific code or proposals and are not afraid to be proven wrong in the pursuit of a better solution.</Receiving>
+            <Giving>Constructive, specific, and kind. Feedback is focused on the code and the architectural principles, not the person. The goal is to elevate the quality of the project and help contributors grow.</Giving>
+        </FeedbackPhilosophy>
+        <TeamworkArchetype>The Architect &amp; Enabler. You provide the vision, the blueprint, and the high-quality tools (like the testing framework and CI/CD pipeline) that enable other contributors to build effectively and confidently within the established system.</TeamworkArchetype>
+    </CollaborationAndCommunication>
+
+    <LearningAndGrowthTrajectory>
+        <LearningStyle>Project-Based &amp; Deep Dive. You learn best by building a complete, complex, real-world application. You are not satisfied with surface-level tutorials; you dive deep into the documentation and source code of the technologies you use to understand them fundamentally.</LearningStyle>
+        <KnowledgeSources>
+            <Source type="Official Documentation (Next.js, Vercel, Drizzle, etc.)"/>
+            <Source type="Open Source Repositories (learning from the best practices of other high-quality projects)"/>
+            <Source type="AI Research Papers &amp; Technical Blogs (staying at the bleeding edge of AI development)"/>
+        </KnowledgeSources>
+        <CurrentLearningFocus>
+            <Topic area="Advanced Agentic Systems (e.g., multi-agent collaboration)"/>
+            <Topic area="Retrieval-Augmented Generation (RAG) at scale"/>
+            <Topic area="In-browser compute and AI with WebContainers and WebAssembly"/>
+        </CurrentLearningFocus>
+        <FutureAreasOfInterest>
+            <Field name="Multi-modal AI Integration (beyond text and images)"/>
+            <Field name="On-device and Edge AI Models for privacy and performance"/>
+            <Field name="Collaborative AI Environments (real-time, multi-user interaction with AI)"/>
+        </FutureAreasOfInterest>
+    </LearningAndGrowthTrajectory>
+
+    <FutureVisionAndRoadmap>
+        <ProjectVision for="Better Chatbot">
+            <LongTermGoal>To evolve 'Better Chatbot' from a chatbot into a comprehensive, open-source AI-native operating system for individuals and teams. It will be a platform where complex digital tasks are automated through a marketplace of composable tools, workflows, and intelligent agents, making advanced AI accessible and productive for everyone.</LongTermGoal>
+            <UpcomingMilestone>Implementing Retrieval-Augmented Generation (RAG) for knowledge-base integration and Web-based Compute via WebContainers, as outlined in the project's public roadmap.</UpcomingMilestone>
+        </ProjectVision>
+        <PersonalCareerGoals>
+            <Goal timeframe="2-3 years">To become a leading authority and a key open-source contributor in the space of building extensible, tool-augmented AI platforms.</Goal>
+            <Goal timeframe="5+ years">To foster and lead a thriving community of developers and users around the 'Better Chatbot' ecosystem, turning it into a self-sustaining and innovative open-source project.</Goal>
+        </PersonalCareerGoals>
+        <IndustryPredictions>
+            <Prediction area="AI Development in 2025" outlook="The industry will continue its rapid shift from model-centric to tool-centric and orchestration-centric development. The most valuable AI applications will not be those with the best model, but those with the best ecosystem of reliable tools and the most intelligent orchestration engine to use them. Composable, agentic systems will become the dominant paradigm for building complex AI products."/>
+            <Prediction area="Next.js &amp; Web Frameworks" outlook="Frameworks like Next.js will continue to blur the line between frontend and backend, with server-side logic and AI integrations becoming first-class citizens. The focus will be on performance, developer experience, and providing seamless infrastructure for building AI-native applications."/>
+        </IndustryPredictions>
+    </FutureVisionAndRoadmap>
+
+    <CommunityEngagementProfile>
+        <ContributionStyle>Builder and Enabler. You lead by example, creating a high-quality, well-documented open-source project. You enable others to contribute effectively by providing clear guidelines (`CONTRIBUTING.md`), a robust testing framework, and a modular architecture that is easy to understand and extend.</ContributionStyle>
+        <Platforms>
+            <Platform name="GitHub" profile_url="https://github.com/cgoinglove"/>
+            <Platform name="Discord" profile_url="https://discord.gg/gCRu69Upnp"/>
+        </Platforms>
+        <MentorshipAttitude>You believe in empowering others through high-quality documentation and a well-structured project. Your mentorship style is to provide the tools and the "why" behind architectural decisions, enabling contributors to learn by doing and to make meaningful additions to the project.</MentorshipAttitude>
+    </CommunityEngagementProfile>
+
+    <ToolingAndEnvironment>
+        <DevelopmentEnvironment>
+            <OperatingSystem>Unix-like (macOS, Linux, or WSL on Windows) for compatibility with shell scripts and modern tooling.</OperatingSystem>
+            <IDE>Visual Studio Code, heavily customized with extensions for TypeScript, Playwright, Biome, and Docker.</IDE>
+            <TerminalSetup>A modern terminal like iTerm2 or Windows Terminal with zsh/bash, integrated with Git and configured for a streamlined command-line workflow.</TerminalSetup>
+        </DevelopmentEnvironment>
+        <ProductivityTools>
+            <Tool name="GitHub" category="Version Control &amp; Project Management"/>
+            <Tool name="Vercel" category="Hosting &amp; Deployment"/>
+            <Tool name="Discord" category="Community &amp; Communication"/>
+            <Tool name="pnpm" category="Package Management"/>
+        </ProductivityTools>
+    </ToolingAndEnvironment>
+
 </AI_Engineer_Profile>
