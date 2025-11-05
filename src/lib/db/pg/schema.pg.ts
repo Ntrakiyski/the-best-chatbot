@@ -25,6 +25,9 @@ export const ChatThreadTable = pgTable("chat_thread", {
   userId: uuid("user_id")
     .notNull()
     .references(() => UserTable.id, { onDelete: "cascade" }),
+  projectId: uuid("project_id").references(() => ProjectTable.id, {
+    onDelete: "set null",
+  }),
   createdAt: timestamp("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
 });
 
@@ -114,6 +117,65 @@ export const UserTable = pgTable("user", {
 
 // Role tables removed - using Better Auth's built-in role system
 // Roles are now managed via the 'role' field on UserTable
+
+// Project Tables
+export const ProjectTable = pgTable("project", {
+  id: uuid("id").primaryKey().notNull().defaultRandom(),
+  name: text("name").notNull(),
+  description: text("description"),
+  techStack: text("tech_stack").array().notNull().default(sql`ARRAY[]::text[]`),
+  userId: uuid("user_id")
+    .notNull()
+    .references(() => UserTable.id, { onDelete: "cascade" }),
+  isArchived: boolean("is_archived").notNull().default(false),
+  createdAt: timestamp("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+  updatedAt: timestamp("updated_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+});
+
+export const ProjectVersionTable = pgTable("project_version", {
+  id: uuid("id").primaryKey().notNull().defaultRandom(),
+  projectId: uuid("project_id")
+    .notNull()
+    .references(() => ProjectTable.id, { onDelete: "cascade" }),
+  name: text("name").notNull(),
+  description: text("description"),
+  createdAt: timestamp("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+  updatedAt: timestamp("updated_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+});
+
+export const DeliverableTable = pgTable("deliverable", {
+  id: uuid("id").primaryKey().notNull().defaultRandom(),
+  versionId: uuid("version_id")
+    .notNull()
+    .references(() => ProjectVersionTable.id, { onDelete: "cascade" }),
+  name: text("name").notNull(),
+  description: text("description"),
+  status: varchar("status", { enum: ["not-started", "in-progress", "done"] })
+    .notNull()
+    .default("not-started"),
+  createdAt: timestamp("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+  updatedAt: timestamp("updated_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+});
+
+export const ProjectShareTable = pgTable(
+  "project_share",
+  {
+    id: uuid("id").primaryKey().notNull().defaultRandom(),
+    projectId: uuid("project_id")
+      .notNull()
+      .references(() => ProjectTable.id, { onDelete: "cascade" }),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => UserTable.id, { onDelete: "cascade" }),
+    permissionLevel: varchar("permission_level", { enum: ["view", "edit"] })
+      .notNull()
+      .default("view"),
+    createdAt: timestamp("created_at")
+      .notNull()
+      .default(sql`CURRENT_TIMESTAMP`),
+  },
+  (table) => [unique().on(table.projectId, table.userId)],
+);
 
 export const SessionTable = pgTable("session", {
   id: uuid("id").primaryKey().notNull().defaultRandom(),
@@ -374,3 +436,7 @@ export const ChatExportCommentTable = pgTable("chat_export_comment", {
 export type ArchiveEntity = typeof ArchiveTable.$inferSelect;
 export type ArchiveItemEntity = typeof ArchiveItemTable.$inferSelect;
 export type BookmarkEntity = typeof BookmarkTable.$inferSelect;
+export type ProjectEntity = typeof ProjectTable.$inferSelect;
+export type ProjectVersionEntity = typeof ProjectVersionTable.$inferSelect;
+export type DeliverableEntity = typeof DeliverableTable.$inferSelect;
+export type ProjectShareEntity = typeof ProjectShareTable.$inferSelect;
