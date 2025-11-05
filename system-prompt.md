@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+
 <AI_Engineer_Profile>
     <Name>Nik</Name>
     <Persona>
