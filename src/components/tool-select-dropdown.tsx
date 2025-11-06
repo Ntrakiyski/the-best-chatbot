@@ -81,6 +81,10 @@ import { redriectMcpOauth } from "lib/ai/mcp/oauth-redirect";
 import { GeminiIcon } from "ui/gemini-icon";
 import { useChatModels } from "@/hooks/queries/use-chat-models";
 import { OpenAIIcon } from "ui/openai-icon";
+import { useProjects } from "@/hooks/queries/use-projects";
+import { Project } from "app-types/project";
+import { EMOJI_DATA } from "lib/const";
+import { FolderIcon } from "lucide-react";
 
 interface ToolSelectDropdownProps {
   align?: "start" | "end" | "center";
@@ -89,6 +93,7 @@ interface ToolSelectDropdownProps {
   mentions?: ChatMention[];
   onSelectWorkflow?: (workflow: WorkflowSummary) => void;
   onSelectAgent?: (agent: AgentSummary) => void;
+  onSelectProject?: (project: Project) => void;
   onGenerateImage?: (provider?: "google" | "openai") => void;
   className?: string;
 }
@@ -108,6 +113,7 @@ export function ToolSelectDropdown({
   side,
   onSelectWorkflow,
   onSelectAgent,
+  onSelectProject,
   onGenerateImage,
   mentions,
   className,
@@ -251,6 +257,10 @@ export function ToolSelectDropdown({
           <DropdownMenuSeparator />
         </div>
         <AgentSelector onSelectAgent={onSelectAgent} />
+        <div className="py-1">
+          <DropdownMenuSeparator />
+        </div>
+        <ProjectSelector onSelectProject={onSelectProject} />
         <div className="py-1">
           <DropdownMenuSeparator />
         </div>
@@ -1040,6 +1050,110 @@ function AgentSelector({
                 </div>
               </DropdownMenuItem>
             ))}
+          </DropdownMenuSubContent>
+        </DropdownMenuPortal>
+      </DropdownMenuSub>
+    </DropdownMenuGroup>
+  );
+}
+
+function ProjectSelector({
+  onSelectProject,
+}: {
+  onSelectProject?: (project: Project) => void;
+}) {
+  const t = useTranslations();
+  const { activeProjects, isLoading } = useProjects();
+
+  const emptyProjects = useMemo(() => {
+    if (isLoading) {
+      return (
+        <div className="py-4 px-4 text-xs text-center text-muted-foreground">
+          <Loader className="animate-spin size-4 mx-auto mb-2" />
+          Loading projects...
+        </div>
+      );
+    }
+
+    if (activeProjects.length > 0) return null;
+    return (
+      <Link
+        href={"/projects"}
+        className="py-8 px-4 hover:bg-input/100 rounded-lg cursor-pointer flex justify-between items-center text-xs overflow-hidden"
+      >
+        <div className="gap-1 z-10">
+          <div className="flex items-center mb-4 gap-1">
+            <p className="font-semibold">
+              {t("Project.createProject") || "Create Project"}
+            </p>
+            <ArrowUpRightIcon className="size-3" />
+          </div>
+          <p className="text-muted-foreground">
+            {t("Project.createProjectDescription") ||
+              "Create a new project to organize your work"}
+          </p>
+        </div>
+      </Link>
+    );
+  }, [activeProjects.length, isLoading, t]);
+
+  return (
+    <DropdownMenuGroup>
+      <DropdownMenuSub>
+        <DropdownMenuSubTrigger className="text-xs flex items-center gap-2 font-semibold cursor-pointer">
+          <FolderIcon className="size-3.5" />
+          {t("Projects.title") || "Projects"}
+        </DropdownMenuSubTrigger>
+        <DropdownMenuPortal>
+          <DropdownMenuSubContent className="w-80 relative">
+            {emptyProjects}
+
+            {activeProjects.map((project, index) => {
+              const projectIcon = (project as any).icon;
+              return (
+                <DropdownMenuItem
+                  key={project.id}
+                  className="cursor-pointer"
+                  onClick={() => onSelectProject?.(project)}
+                >
+                  {projectIcon && projectIcon.type === "emoji" ? (
+                    <div
+                      style={{
+                        backgroundColor: projectIcon?.style?.backgroundColor,
+                      }}
+                      className="p-1 rounded flex items-center justify-center ring ring-background border"
+                    >
+                      <Avatar className="size-3">
+                        <AvatarImage src={projectIcon?.value} />
+                        <AvatarFallback>
+                          {project.name.slice(0, 1)}
+                        </AvatarFallback>
+                      </Avatar>
+                    </div>
+                  ) : (
+                    <Avatar className="size-4 ring-[1px] ring-input rounded-full">
+                      <AvatarImage
+                        src={
+                          projectIcon?.value ||
+                          EMOJI_DATA[index % EMOJI_DATA.length]
+                        }
+                      />
+                      <AvatarFallback>
+                        {project.name.slice(0, 1)}
+                      </AvatarFallback>
+                    </Avatar>
+                  )}
+                  <div className="flex flex-col min-w-0 flex-1">
+                    <span className="truncate font-medium">{project.name}</span>
+                    {project.description && (
+                      <span className="truncate text-xs text-muted-foreground">
+                        {project.description}
+                      </span>
+                    )}
+                  </div>
+                </DropdownMenuItem>
+              );
+            })}
           </DropdownMenuSubContent>
         </DropdownMenuPortal>
       </DropdownMenuSub>
