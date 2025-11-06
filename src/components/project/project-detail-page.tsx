@@ -37,8 +37,8 @@ import {
   Edit2,
 } from "lucide-react";
 import { DeliverableStatus } from "app-types/project";
-import { toast } from "ui/use-toast";
-import { notify } from "ui/notify";
+import { toast } from "sonner";
+import { notify } from "lib/notify";
 import {
   updateProjectAction,
   createVersionAction,
@@ -53,31 +53,6 @@ import {
 interface ProjectDetailPageProps {
   projectId: string;
 }
-
-const statusConfig: Record<
-  DeliverableStatus,
-  {
-    icon: React.ReactNode;
-    label: string;
-    variant: "default" | "secondary" | "outline";
-  }
-> = {
-  "not-started": {
-    icon: <Circle className="size-3" />,
-    label: "Not Started",
-    variant: "secondary",
-  },
-  "in-progress": {
-    icon: <Clock className="size-3" />,
-    label: "In Progress",
-    variant: "default",
-  },
-  done: {
-    icon: <CheckCircle2 className="size-3" />,
-    label: "Done",
-    variant: "outline",
-  },
-};
 
 export default function ProjectDetailPage({
   projectId,
@@ -147,17 +122,14 @@ export default function ProjectDetailPage({
         description: projectForm.description || undefined,
         techStack: projectForm.techStack,
       });
-      toast({
-        title: t("Projects.projectUpdated"),
+      toast.success(t("Projects.projectUpdated"), {
         description: "Project updated successfully",
       });
       setIsEditingProject(false);
       mutate();
     } catch (error) {
-      toast({
-        title: t("Projects.failedToUpdateProject"),
+      toast.error(t("Projects.failedToUpdateProject"), {
         description: error instanceof Error ? error.message : "Unknown error",
-        variant: "destructive",
       });
     }
   };
@@ -165,10 +137,8 @@ export default function ProjectDetailPage({
   // Create version
   const handleCreateVersion = async () => {
     if (!versionForm.name.trim()) {
-      toast({
-        title: "Validation Error",
+      toast.error("Validation Error", {
         description: "Version name is required",
-        variant: "destructive",
       });
       return;
     }
@@ -179,18 +149,15 @@ export default function ProjectDetailPage({
         name: versionForm.name,
         description: versionForm.description || undefined,
       });
-      toast({
-        title: t("Projects.versionCreated"),
+      toast.success(t("Projects.versionCreated"), {
         description: "Version created successfully",
       });
       setShowVersionForm(false);
       setVersionForm({ name: "", description: "" });
       mutate();
     } catch (error) {
-      toast({
-        title: t("Projects.failedToCreateVersion"),
+      toast.error(t("Projects.failedToCreateVersion"), {
         description: error instanceof Error ? error.message : "Unknown error",
-        variant: "destructive",
       });
     }
   };
@@ -202,23 +169,23 @@ export default function ProjectDetailPage({
         name: editVersionForm.name,
         description: editVersionForm.description || undefined,
       });
-      toast({
-        title: t("Projects.versionUpdated"),
+      toast.success(t("Projects.versionUpdated"), {
         description: "Version updated successfully",
       });
       setEditingVersion(null);
       mutate();
     } catch (error) {
-      toast({
-        title: t("Projects.failedToUpdateVersion"),
+      toast.error(t("Projects.failedToUpdateVersion"), {
         description: error instanceof Error ? error.message : "Unknown error",
-        variant: "destructive",
       });
     }
   };
 
   // Delete version
-  const handleDeleteVersion = async (versionId: string, versionName: string) => {
+  const handleDeleteVersion = async (
+    versionId: string,
+    versionName: string,
+  ) => {
     const confirmed = await notify.confirm({
       title: "Delete Version?",
       description: `Are you sure you want to delete "${versionName}"? All deliverables will also be deleted.`,
@@ -227,16 +194,13 @@ export default function ProjectDetailPage({
     if (confirmed) {
       try {
         await deleteVersionAction(versionId);
-        toast({
-          title: t("Projects.versionDeleted"),
+        toast.success(t("Projects.versionDeleted"), {
           description: "Version deleted successfully",
         });
         mutate();
       } catch (error) {
-        toast({
-          title: t("Projects.failedToDeleteVersion"),
+        toast.error(t("Projects.failedToDeleteVersion"), {
           description: error instanceof Error ? error.message : "Unknown error",
-          variant: "destructive",
         });
       }
     }
@@ -245,10 +209,8 @@ export default function ProjectDetailPage({
   // Create deliverable
   const handleCreateDeliverable = async (versionId: string) => {
     if (!deliverableForm.name.trim()) {
-      toast({
-        title: "Validation Error",
+      toast.error("Validation Error", {
         description: "Deliverable name is required",
-        variant: "destructive",
       });
       return;
     }
@@ -259,18 +221,15 @@ export default function ProjectDetailPage({
         name: deliverableForm.name,
         description: deliverableForm.description || undefined,
       });
-      toast({
-        title: t("Projects.deliverableCreated"),
+      toast.success(t("Projects.deliverableCreated"), {
         description: "Deliverable created successfully",
       });
       setShowDeliverableForm(null);
       setDeliverableForm({ name: "", description: "" });
       mutate();
     } catch (error) {
-      toast({
-        title: t("Projects.failedToCreateDeliverable"),
+      toast.error(t("Projects.failedToCreateDeliverable"), {
         description: error instanceof Error ? error.message : "Unknown error",
-        variant: "destructive",
       });
     }
   };
@@ -282,17 +241,14 @@ export default function ProjectDetailPage({
         name: editDeliverableForm.name,
         description: editDeliverableForm.description || undefined,
       });
-      toast({
-        title: t("Projects.deliverableUpdated"),
+      toast.success(t("Projects.deliverableUpdated"), {
         description: "Deliverable updated successfully",
       });
       setEditingDeliverable(null);
       mutate();
     } catch (error) {
-      toast({
-        title: t("Projects.failedToUpdateDeliverable"),
+      toast.error(t("Projects.failedToUpdateDeliverable"), {
         description: error instanceof Error ? error.message : "Unknown error",
-        variant: "destructive",
       });
     }
   };
@@ -304,16 +260,13 @@ export default function ProjectDetailPage({
   ) => {
     try {
       await updateDeliverableStatusAction(deliverableId, status);
-      toast({
-        title: t("Projects.statusUpdated"),
+      toast.success(t("Projects.statusUpdated"), {
         description: "Status updated successfully",
       });
       mutate();
     } catch (error) {
-      toast({
-        title: t("Projects.failedToUpdateStatus"),
+      toast.error(t("Projects.failedToUpdateStatus"), {
         description: error instanceof Error ? error.message : "Unknown error",
-        variant: "destructive",
       });
     }
   };
@@ -331,16 +284,13 @@ export default function ProjectDetailPage({
     if (confirmed) {
       try {
         await deleteDeliverableAction(deliverableId);
-        toast({
-          title: t("Projects.deliverableDeleted"),
+        toast.success(t("Projects.deliverableDeleted"), {
           description: "Deliverable deleted successfully",
         });
         mutate();
       } catch (error) {
-        toast({
-          title: t("Projects.failedToDeleteDeliverable"),
+        toast.error(t("Projects.failedToDeleteDeliverable"), {
           description: error instanceof Error ? error.message : "Unknown error",
-          variant: "destructive",
         });
       }
     }
@@ -430,7 +380,10 @@ export default function ProjectDetailPage({
                         id="project-name"
                         value={projectForm.name}
                         onChange={(e) =>
-                          setProjectForm({ ...projectForm, name: e.target.value })
+                          setProjectForm({
+                            ...projectForm,
+                            name: e.target.value,
+                          })
                         }
                         placeholder="Enter project name"
                       />
@@ -520,7 +473,10 @@ export default function ProjectDetailPage({
           {!isEditingProject &&
             project.techStack &&
             project.techStack.length > 0 && (
-              <div className="flex flex-wrap gap-2 mt-4" data-testid="tech-stack">
+              <div
+                className="flex flex-wrap gap-2 mt-4"
+                data-testid="tech-stack"
+              >
                 {project.techStack.map((tech, idx) => (
                   <Badge
                     key={idx}
@@ -766,7 +722,9 @@ export default function ProjectDetailPage({
                           </div>
                           <div className="flex gap-2">
                             <Button
-                              onClick={() => handleCreateDeliverable(version.id)}
+                              onClick={() =>
+                                handleCreateDeliverable(version.id)
+                              }
                               size="sm"
                             >
                               Create
@@ -774,7 +732,10 @@ export default function ProjectDetailPage({
                             <Button
                               onClick={() => {
                                 setShowDeliverableForm(null);
-                                setDeliverableForm({ name: "", description: "" });
+                                setDeliverableForm({
+                                  name: "",
+                                  description: "",
+                                });
                               }}
                               variant="outline"
                               size="sm"
@@ -790,7 +751,6 @@ export default function ProjectDetailPage({
                   {version.deliverables && version.deliverables.length > 0 ? (
                     <div className="space-y-2">
                       {version.deliverables.map((deliverable) => {
-                        const statusInfo = statusConfig[deliverable.status];
                         return (
                           <div
                             key={deliverable.id}
@@ -956,4 +916,3 @@ export default function ProjectDetailPage({
     </div>
   );
 }
-

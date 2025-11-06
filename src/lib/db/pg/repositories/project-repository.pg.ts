@@ -12,6 +12,7 @@ import {
   ProjectWithVersions,
   ProjectVersion,
   Deliverable,
+  DeliverableStatus,
 } from "app-types/project";
 
 export const pgProjectRepository: ProjectRepository = {
