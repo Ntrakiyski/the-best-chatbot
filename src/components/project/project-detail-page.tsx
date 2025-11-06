@@ -122,24 +122,18 @@ export default function ProjectDetailPage({
         description: projectForm.description || undefined,
         techStack: projectForm.techStack,
       });
-      toast.success(t("Projects.projectUpdated"), {
-        description: "Project updated successfully",
-      });
+      toast.success(t("Projects.projectUpdated"));
       setIsEditingProject(false);
       mutate();
-    } catch (error) {
-      toast.error(t("Projects.failedToUpdateProject"), {
-        description: error instanceof Error ? error.message : "Unknown error",
-      });
+    } catch (_error) {
+      toast.error(t("Projects.failedToUpdateProject"));
     }
   };
 
   // Create version
   const handleCreateVersion = async () => {
     if (!versionForm.name.trim()) {
-      toast.error("Validation Error", {
-        description: "Version name is required",
-      });
+      toast.error("Validation Error");
       return;
     }
 
@@ -149,16 +143,12 @@ export default function ProjectDetailPage({
         name: versionForm.name,
         description: versionForm.description || undefined,
       });
-      toast.success(t("Projects.versionCreated"), {
-        description: "Version created successfully",
-      });
+      toast.success(t("Projects.versionCreated"));
       setShowVersionForm(false);
       setVersionForm({ name: "", description: "" });
       mutate();
-    } catch (error) {
-      toast.error(t("Projects.failedToCreateVersion"), {
-        description: error instanceof Error ? error.message : "Unknown error",
-      });
+    } catch (_error) {
+      toast.error(t("Projects.failedToCreateVersion"));
     }
   };
 
@@ -169,15 +159,11 @@ export default function ProjectDetailPage({
         name: editVersionForm.name,
         description: editVersionForm.description || undefined,
       });
-      toast.success(t("Projects.versionUpdated"), {
-        description: "Version updated successfully",
-      });
+      toast.success(t("Projects.versionUpdated"));
       setEditingVersion(null);
       mutate();
-    } catch (error) {
-      toast.error(t("Projects.failedToUpdateVersion"), {
-        description: error instanceof Error ? error.message : "Unknown error",
-      });
+    } catch (_error) {
+      toast.error(t("Projects.failedToUpdateVersion"));
     }
   };
 
@@ -194,14 +180,10 @@ export default function ProjectDetailPage({
     if (confirmed) {
       try {
         await deleteVersionAction(versionId);
-        toast.success(t("Projects.versionDeleted"), {
-          description: "Version deleted successfully",
-        });
+        toast.success(t("Projects.versionDeleted"));
         mutate();
-      } catch (error) {
-        toast.error(t("Projects.failedToDeleteVersion"), {
-          description: error instanceof Error ? error.message : "Unknown error",
-        });
+      } catch (_error) {
+        toast.error(t("Projects.failedToDeleteVersion"));
       }
     }
   };
@@ -209,9 +191,7 @@ export default function ProjectDetailPage({
   // Create deliverable
   const handleCreateDeliverable = async (versionId: string) => {
     if (!deliverableForm.name.trim()) {
-      toast.error("Validation Error", {
-        description: "Deliverable name is required",
-      });
+      toast.error("Validation Error");
       return;
     }
 
@@ -221,16 +201,12 @@ export default function ProjectDetailPage({
         name: deliverableForm.name,
         description: deliverableForm.description || undefined,
       });
-      toast.success(t("Projects.deliverableCreated"), {
-        description: "Deliverable created successfully",
-      });
+      toast.success(t("Projects.deliverableCreated"));
       setShowDeliverableForm(null);
       setDeliverableForm({ name: "", description: "" });
       mutate();
-    } catch (error) {
-      toast.error(t("Projects.failedToCreateDeliverable"), {
-        description: error instanceof Error ? error.message : "Unknown error",
-      });
+    } catch (_error) {
+      toast.error(t("Projects.failedToCreateDeliverable"));
     }
   };
 
@@ -241,15 +217,11 @@ export default function ProjectDetailPage({
         name: editDeliverableForm.name,
         description: editDeliverableForm.description || undefined,
       });
-      toast.success(t("Projects.deliverableUpdated"), {
-        description: "Deliverable updated successfully",
-      });
+      toast.success(t("Projects.deliverableUpdated"));
       setEditingDeliverable(null);
       mutate();
-    } catch (error) {
-      toast.error(t("Projects.failedToUpdateDeliverable"), {
-        description: error instanceof Error ? error.message : "Unknown error",
-      });
+    } catch (_error) {
+      toast.error(t("Projects.failedToUpdateDeliverable"));
     }
   };
 
@@ -260,14 +232,10 @@ export default function ProjectDetailPage({
   ) => {
     try {
       await updateDeliverableStatusAction(deliverableId, status);
-      toast.success(t("Projects.statusUpdated"), {
-        description: "Status updated successfully",
-      });
+      toast.success(t("Projects.statusUpdated"));
       mutate();
-    } catch (error) {
-      toast.error(t("Projects.failedToUpdateStatus"), {
-        description: error instanceof Error ? error.message : "Unknown error",
-      });
+    } catch (_error) {
+      toast.error(t("Projects.failedToUpdateStatus"));
     }
   };
 
@@ -284,14 +252,10 @@ export default function ProjectDetailPage({
     if (confirmed) {
       try {
         await deleteDeliverableAction(deliverableId);
-        toast.success(t("Projects.deliverableDeleted"), {
-          description: "Deliverable deleted successfully",
-        });
+        toast.success(t("Projects.deliverableDeleted"));
         mutate();
-      } catch (error) {
-        toast.error(t("Projects.failedToDeleteDeliverable"), {
-          description: error instanceof Error ? error.message : "Unknown error",
-        });
+      } catch (_error) {
+        toast.error(t("Projects.failedToDeleteDeliverable"));
       }
     }
   };
