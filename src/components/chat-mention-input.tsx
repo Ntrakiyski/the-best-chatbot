@@ -543,6 +543,7 @@ export function ChatMentionInputSuggestion({
   const groupedMentions = useMemo(() => {
     const groups = {
       agent: { title: "Agents", items: [] as MentionItemType[] },
+      project: { title: "Projects", items: [] as MentionItemType[] },
       workflow: { title: "Workflows", items: [] as MentionItemType[] },
       defaultTool: { title: "App Tools", items: [] as MentionItemType[] },
       mcp: { title: "MCP Tools", items: [] as MentionItemType[] },
@@ -617,7 +618,13 @@ export function ChatMentionInputSuggestion({
                   const currentItem = allMentions[selectedIndex];
                   const currentType =
                     currentItem.type === "mcpTool" ? "mcp" : currentItem.type;
-                  const typeOrder = ["agent", "workflow", "mcp", "defaultTool"];
+                  const typeOrder = [
+                    "agent",
+                    "project",
+                    "workflow",
+                    "mcp",
+                    "defaultTool",
+                  ];
                   const currentTypeIndex = typeOrder.indexOf(currentType);
 
                   if (e.key === "ArrowLeft" && currentTypeIndex > 0) {
@@ -681,6 +688,27 @@ export function ChatMentionInputSuggestion({
                     </div>
                     <div className="space-y-1">
                       {groupedMentions.agent.items.map((item) => (
+                        <MentionItem
+                          key={item.id}
+                          item={item}
+                          isSelected={
+                            allMentions[selectedIndex]?.id === item.id
+                          }
+                          ref={(el) => {
+                            itemRefs.current[item.id] = el;
+                          }}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {groupedMentions.project.items.length > 0 && (
+                  <div className="p-2 border-t">
+                    <div className="text-xs font-medium text-muted-foreground px-2 py-1.5">
+                      {groupedMentions.project.title}
+                    </div>
+                    <div className="space-y-1">
+                      {groupedMentions.project.items.map((item) => (
                         <MentionItem
                           key={item.id}
                           item={item}
@@ -762,7 +790,7 @@ export function ChatMentionInputSuggestion({
             ) : (
               // Desktop horizontal layout
               <div className="flex flex-1 h-[300px]">
-                {/* Agents & Workflows Column */}
+                {/* Agents, Projects & Workflows Column */}
                 <div className="flex-1 border-r overflow-y-auto">
                   <div className="p-2">
                     <div className="text-xs font-medium text-muted-foreground px-2 py-1.5">
@@ -785,6 +813,31 @@ export function ChatMentionInputSuggestion({
                       ) : (
                         <div className="px-2 py-3 text-xs text-muted-foreground text-center">
                           No agents found
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  <div className="p-2 border-t">
+                    <div className="text-xs font-medium text-muted-foreground px-2 py-1.5">
+                      {groupedMentions.project.title}
+                    </div>
+                    <div className="space-y-1">
+                      {groupedMentions.project.items.length > 0 ? (
+                        groupedMentions.project.items.map((item) => (
+                          <MentionItem
+                            key={item.id}
+                            item={item}
+                            isSelected={
+                              allMentions[selectedIndex]?.id === item.id
+                            }
+                            ref={(el) => {
+                              itemRefs.current[item.id] = el;
+                            }}
+                          />
+                        ))
+                      ) : (
+                        <div className="px-2 py-3 text-xs text-muted-foreground text-center">
+                          No projects found
                         </div>
                       )}
                     </div>
