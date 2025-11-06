@@ -305,7 +305,7 @@ export async function POST(request: Request) {
           .orElse({});
 
         // Phase 3: Fetch project context if thread is linked to a project
-        let projectContextPrompt: string | null = null;
+        let projectContextPrompt: string | undefined = undefined;
         if (thread?.projectId) {
           try {
             const projectWithContext = await projectRepository.findProjectById(
@@ -313,7 +313,7 @@ export async function POST(request: Request) {
               session.user.id,
             );
             projectContextPrompt =
-              buildProjectContextPrompt(projectWithContext);
+              buildProjectContextPrompt(projectWithContext) || undefined;
           } catch (error) {
             logger.error("Failed to fetch project context", error);
             // Continue without project context - graceful degradation
