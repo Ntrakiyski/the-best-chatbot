@@ -1,6 +1,13 @@
 "use client";
 import { CreateProjectModal } from "@/components/project/create-project-modal";
-import { ArrowUpRight, FolderOpen, Archive } from "lucide-react";
+import {
+  ArrowUpRight,
+  FolderOpen,
+  Archive,
+  MoreVertical,
+  Trash2,
+  ArchiveRestore,
+} from "lucide-react";
 import { Card, CardDescription, CardHeader, CardTitle } from "ui/card";
 import { Button } from "ui/button";
 import { Skeleton } from "ui/skeleton";
@@ -9,31 +16,123 @@ import { useProjects } from "@/hooks/queries/use-projects";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { Badge } from "ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "ui/tabs";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "ui/dropdown-menu";
+import { notify } from "ui/notify";
 
 export default function ProjectsListPage() {
   const t = useTranslations();
   const router = useRouter();
-  const { activeProjects, isLoading } = useProjects();
+  const {
+    projects,
+    isLoading,
+    archived,
+    setArchived,
+    archiveProject,
+    unarchiveProject,
+    deleteProject,
+  } = useProjects();
+
+  // Handle delete with confirmation
+  const handleDelete = async (projectId: string, projectName: string) => {
+    const confirmed = await notify.confirm({
+      title: t("Projects.confirmDeleteProject"),
+      description: t("Projects.confirmDeleteProjectDescription"),
+    });
+
+    if (confirmed) {
+      await deleteProject(projectId);
+    }
+  };
+
+  // Filter projects based on archived state
+  const displayProjects = projects.filter((p) =>
+    archived === true ? p.isArchived : !p.isArchived,
+  );
 
   return (
     <div className="w-full flex flex-col gap-4 p-8">
       <div className="flex flex-row gap-2 items-center">
         <h1 className="text-2xl font-bold">
-          {t("Project.projects") || "Projects"}
+          {t("Projects.myProjects") || "My Projects"}
         </h1>
       </div>
 
-      {/* Projects Section */}
-      <div className="flex flex-col gap-4">
-        <div className="flex items-center gap-2">
-          <h2 className="text-lg font-semibold">
-            {t("Project.myProjects") || "My Projects"}
-          </h2>
-          <div className="flex-1 h-px bg-border" />
-        </div>
+      {/* Tabs for Active/Archived */}
+      <Tabs
+        value={archived === true ? "archived" : "active"}
+        onValueChange={(value) => setArchived(value === "archived")}
+        className="w-full"
+      >
+        <TabsList className="grid w-full max-w-md grid-cols-2">
+          <TabsTrigger value="active">
+            {t("Projects.activeProjects") || "Active Projects"}
+          </TabsTrigger>
+          <TabsTrigger value="archived">
+            {t("Projects.archivedProjects") || "Archived Projects"}
+          </TabsTrigger>
+        </TabsList>
 
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {/* Create Project Card */}
+        <TabsContent value="active" className="mt-4">
+          <ProjectsGrid
+            projects={displayProjects}
+            isLoading={isLoading}
+            t={t}
+            router={router}
+            onArchive={archiveProject}
+            onUnarchive={unarchiveProject}
+            onDelete={handleDelete}
+            showCreate={true}
+          />
+        </TabsContent>
+
+        <TabsContent value="archived" className="mt-4">
+          <ProjectsGrid
+            projects={displayProjects}
+            isLoading={isLoading}
+            t={t}
+            router={router}
+            onArchive={archiveProject}
+            onUnarchive={unarchiveProject}
+            onDelete={handleDelete}
+            showCreate={false}
+          />
+        </TabsContent>
+      </Tabs>
+    </div>
+  );
+}
+
+// Separate component for the project grid
+function ProjectsGrid({
+  projects,
+  isLoading,
+  t,
+  router,
+  onArchive,
+  onUnarchive,
+  onDelete,
+  showCreate,
+}: {
+  projects: any[];
+  isLoading: boolean;
+  t: any;
+  router: any;
+  onArchive: (id: string) => void;
+  onUnarchive: (id: string) => void;
+  onDelete: (id: string, name: string) => void;
+  showCreate: boolean;
+}) {
+  return (
+    <div className="flex flex-col gap-4">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        {/* Create Project Card - only show on active tab */}
+        {showCreate && (
           <CreateProjectModal>
             <Card
               className="relative bg-secondary overflow-hidden w-full hover:bg-input transition-colors h-[196px] cursor-pointer"
@@ -63,44 +162,106 @@ export default function ProjectsListPage() {
               </CardHeader>
             </Card>
           </CreateProjectModal>
+        )}
 
-          {/* Loading Skeletons */}
-          {isLoading
-            ? Array(6)
-                .fill(null)
-                .map((_, index) => (
-                  <Skeleton key={index} className="w-full h-[196px]" />
-                ))
-            : /* Project Cards */
-              activeProjects?.map((project) => (
-                <Card
-                  key={project.id}
-                  className="relative overflow-hidden w-full hover:bg-accent transition-colors h-[196px] cursor-pointer group"
-                  onClick={() => router.push(`/projects/${project.id}`)}
-                  data-testid={`project-card-${project.id}`}
-                >
-                  <CardHeader className="flex flex-col h-full">
-                    <div className="flex items-start gap-3">
-                      <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                        <FolderOpen className="size-5 text-primary" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <CardTitle className="text-base font-semibold truncate">
-                          {project.name}
-                        </CardTitle>
-                        {project.isArchived && (
-                          <Badge
-                            variant="secondary"
-                            className="mt-1 text-xs"
-                            data-testid={`archived-badge-${project.id}`}
-                          >
-                            <Archive className="size-3 mr-1" />
-                            {t("Common.archived") || "Archived"}
-                          </Badge>
-                        )}
-                      </div>
+        {/* Loading Skeletons */}
+        {isLoading
+          ? Array(6)
+              .fill(null)
+              .map((_, index) => (
+                <Skeleton key={index} className="w-full h-[196px]" />
+              ))
+          : /* Project Cards */
+            projects?.map((project) => (
+              <Card
+                key={project.id}
+                className="relative overflow-hidden w-full hover:bg-accent transition-colors h-[196px] group"
+                data-testid={`project-card-${project.id}`}
+              >
+                <CardHeader className="flex flex-col h-full">
+                  <div className="flex items-start gap-3">
+                    <div
+                      className="flex-shrink-0 w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center cursor-pointer"
+                      onClick={() => router.push(`/projects/${project.id}`)}
+                    >
+                      <FolderOpen className="size-5 text-primary" />
+                    </div>
+                    <div
+                      className="flex-1 min-w-0 cursor-pointer"
+                      onClick={() => router.push(`/projects/${project.id}`)}
+                    >
+                      <CardTitle className="text-base font-semibold truncate">
+                        {project.name}
+                      </CardTitle>
+                      {project.isArchived && (
+                        <Badge
+                          variant="secondary"
+                          className="mt-1 text-xs"
+                          data-testid={`archived-badge-${project.id}`}
+                        >
+                          <Archive className="size-3 mr-1" />
+                          {t("Common.archived") || "Archived"}
+                        </Badge>
+                      )}
                     </div>
 
+                    {/* Dropdown Menu */}
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8"
+                          onClick={(e) => e.stopPropagation()}
+                          data-testid={`project-menu-${project.id}`}
+                        >
+                          <MoreVertical className="size-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        {project.isArchived ? (
+                          <DropdownMenuItem
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onUnarchive(project.id);
+                            }}
+                            data-testid={`unarchive-${project.id}`}
+                          >
+                            <ArchiveRestore className="size-4 mr-2" />
+                            {t("Projects.unarchiveProject") ||
+                              "Unarchive Project"}
+                          </DropdownMenuItem>
+                        ) : (
+                          <DropdownMenuItem
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onArchive(project.id);
+                            }}
+                            data-testid={`archive-${project.id}`}
+                          >
+                            <Archive className="size-4 mr-2" />
+                            {t("Projects.archiveProject") || "Archive Project"}
+                          </DropdownMenuItem>
+                        )}
+                        <DropdownMenuItem
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onDelete(project.id, project.name);
+                          }}
+                          className="text-destructive focus:text-destructive"
+                          data-testid={`delete-${project.id}`}
+                        >
+                          <Trash2 className="size-4 mr-2" />
+                          {t("Projects.deleteProject") || "Delete Project"}
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
+
+                  <div
+                    className="cursor-pointer"
+                    onClick={() => router.push(`/projects/${project.id}`)}
+                  >
                     {project.description && (
                       <CardDescription className="mt-2 line-clamp-2 text-sm">
                         {project.description}
@@ -138,28 +299,29 @@ export default function ProjectsListPage() {
                         <ArrowUpRight className="size-3.5" />
                       </Button>
                     </div>
-                  </CardHeader>
-                </Card>
-              ))}
-        </div>
-
-        {/* Empty State */}
-        {!isLoading && activeProjects.length === 0 && (
-          <div className="flex flex-col items-center justify-center py-12 text-center">
-            <FolderOpen className="size-12 text-muted-foreground mb-4" />
-            <h3 className="text-lg font-semibold mb-2">
-              {t("Project.noProjects") || "No projects yet"}
-            </h3>
-            <p className="text-sm text-muted-foreground mb-4">
-              {t("Project.noProjectsDescription") ||
-                "Create your first project to get started"}
-            </p>
-            <CreateProjectModal>
-              <Button>{t("Project.createProject") || "Create Project"}</Button>
-            </CreateProjectModal>
-          </div>
-        )}
+                  </div>
+                </CardHeader>
+              </Card>
+            ))}
       </div>
+
+      {/* Empty State */}
+      {!isLoading && projects.length === 0 && (
+        <div className="flex flex-col items-center justify-center py-12 text-center">
+          <FolderOpen className="size-12 text-muted-foreground mb-4" />
+          <h3 className="text-lg font-semibold mb-2">
+            {showCreate
+              ? t("Projects.noProjects") || "No projects yet"
+              : t("Projects.noArchivedProjects") || "No archived projects"}
+          </h3>
+          <p className="text-sm text-muted-foreground max-w-md">
+            {showCreate &&
+              (t("Projects.createFirstProject") ||
+                "Create your first project to get started")}
+          </p>
+        </div>
+      )}
     </div>
   );
 }
+
