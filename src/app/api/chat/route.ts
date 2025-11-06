@@ -83,10 +83,16 @@ export async function POST(request: Request) {
 
     if (!thread) {
       logger.info(`create chat thread: ${id}`);
+
+      // Extract projectId from mentions if a project is mentioned
+      const projectMention = mentions.find((m) => m.type === "project");
+      const projectId = projectMention?.projectId || null;
+
       const newThread = await chatRepository.insertThread({
         id,
         title: "",
         userId: session.user.id,
+        projectId,
       });
       thread = await chatRepository.selectThreadDetails(newThread.id);
     }

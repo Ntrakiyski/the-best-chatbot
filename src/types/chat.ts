@@ -30,6 +30,7 @@ export type ChatThread = {
   id: string;
   title: string;
   userId: string;
+  projectId?: string | null;
   createdAt: Date;
 };
 
@@ -81,6 +82,19 @@ export const ChatMentionSchema = z.discriminatedUnion("type", [
     name: z.string(),
     description: z.string().nullish(),
     agentId: z.string(),
+    icon: z
+      .object({
+        type: z.literal("emoji"),
+        value: z.string(),
+        style: z.record(z.string(), z.string()).optional(),
+      })
+      .nullish(),
+  }),
+  z.object({
+    type: z.literal("project"),
+    name: z.string(),
+    description: z.string().nullish(),
+    projectId: z.string(),
     icon: z
       .object({
         type: z.literal("emoji"),
