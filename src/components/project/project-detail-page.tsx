@@ -67,6 +67,7 @@ export default function ProjectDetailPage({
     name: "",
     description: "",
     techStack: [] as string[],
+    systemPrompt: "",
   });
 
   // Version/Deliverable creation state
@@ -110,6 +111,7 @@ export default function ProjectDetailPage({
       name: project.name,
       description: project.description || "",
       techStack: project.techStack || [],
+      systemPrompt: project.systemPrompt || "",
     });
     setIsEditingProject(true);
   };
@@ -121,6 +123,7 @@ export default function ProjectDetailPage({
         name: projectForm.name,
         description: projectForm.description || undefined,
         techStack: projectForm.techStack,
+        systemPrompt: projectForm.systemPrompt || undefined,
       });
       toast.success(t("Projects.projectUpdated"));
       setIsEditingProject(false);
@@ -368,6 +371,30 @@ export default function ProjectDetailPage({
                         placeholder="Enter project description"
                         rows={3}
                       />
+                    </div>
+                    <div>
+                      <Label htmlFor="system-prompt">
+                        {t("Projects.systemPrompt") ||
+                          "Custom AI System Prompt (XML)"}
+                      </Label>
+                      <Textarea
+                        id="system-prompt"
+                        value={projectForm.systemPrompt}
+                        onChange={(e) =>
+                          setProjectForm({
+                            ...projectForm,
+                            systemPrompt: e.target.value,
+                          })
+                        }
+                        placeholder="Enter custom XML instructions for AI context (optional)"
+                        rows={6}
+                        className="font-mono text-sm"
+                        data-testid="system-prompt-input"
+                      />
+                      <p className="text-xs text-muted-foreground mt-1">
+                        {t("Projects.systemPromptHelp") ||
+                          "Custom XML prompt to guide AI behavior when this project is mentioned in chat"}
+                      </p>
                     </div>
                     <div className="flex gap-2">
                       <Button

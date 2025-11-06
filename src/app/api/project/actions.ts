@@ -55,6 +55,7 @@ export async function updateProjectAction(
     name?: string;
     description?: string;
     techStack?: string[];
+    systemPrompt?: string;
   },
 ): Promise<Project> {
   const userId = await getUserId();

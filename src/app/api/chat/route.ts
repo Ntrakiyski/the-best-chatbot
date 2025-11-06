@@ -13,13 +13,18 @@ import { customModelProvider, isToolCallUnsupportedModel } from "lib/ai/models";
 
 import { mcpClientsManager } from "lib/ai/mcp/mcp-manager";
 
-import { agentRepository, chatRepository } from "lib/db/repository";
+import {
+  agentRepository,
+  chatRepository,
+  projectRepository,
+} from "lib/db/repository";
 import globalLogger from "logger";
 import {
   buildMcpServerCustomizationsSystemPrompt,
   buildUserSystemPrompt,
   buildToolCallUnsupportedModelSystemPrompt,
 } from "lib/ai/prompts";
+import { buildProjectContextPrompt } from "lib/ai/project-context";
 import {
   chatApiSchemaRequestBodySchema,
   ChatMention,
@@ -96,7 +101,7 @@ export async function POST(request: Request) {
         projectId,
       });
       thread = await chatRepository.selectThreadDetails(newThread.id);
-      
+
       // Custom event #3: chat.thread.created
       Sentry.captureMessage("chat.thread.created", {
         level: "info",
@@ -299,8 +304,25 @@ export async function POST(request: Request) {
           .map((v) => filterMcpServerCustomizations(MCP_TOOLS!, v))
           .orElse({});
 
+        // Phase 3: Fetch project context if thread is linked to a project
+        let projectContextPrompt: string | null = null;
+        if (thread?.projectId) {
+          try {
+            const projectWithContext = await projectRepository.findProjectById(
+              thread.projectId,
+              session.user.id,
+            );
+            projectContextPrompt =
+              buildProjectContextPrompt(projectWithContext);
+          } catch (error) {
+            logger.error("Failed to fetch project context", error);
+            // Continue without project context - graceful degradation
+          }
+        }
+
         const systemPrompt = mergeSystemPrompt(
           buildUserSystemPrompt(session.user, userPreferences, agent),
+          projectContextPrompt,
           buildMcpServerCustomizationsSystemPrompt(mcpServerCustomizations),
           !supportToolCall && buildToolCallUnsupportedModelSystemPrompt,
         );
@@ -357,7 +379,7 @@ export async function POST(request: Request) {
         const promptLength = messages.reduce((acc, m) => {
           return acc + (m.parts?.length || 0);
         }, 0);
-        
+
         const streamingSpan = Sentry.startInactiveSpan({
           name: "chat.streaming",
           op: "ai.generate",
@@ -370,7 +392,7 @@ export async function POST(request: Request) {
             "chat.prompt_length": promptLength,
           },
         });
-        
+
         const result = streamText({
           model,
           system: systemPrompt,
@@ -388,18 +410,21 @@ export async function POST(request: Request) {
             messageMetadata: ({ part }) => {
               if (part.type == "finish") {
                 metadata.usage = part.totalUsage;
-                
+
                 // Custom event #5: chat.streaming.completed
                 const duration = Date.now() - streamingStartTime;
                 streamingSpan?.setAttributes({
-                  "ai.token_usage.prompt": (part.totalUsage as any)?.promptTokens || 0,
-                  "ai.token_usage.completion": (part.totalUsage as any)?.completionTokens || 0,
-                  "ai.token_usage.total": (part.totalUsage as any)?.totalTokens || 0,
+                  "ai.token_usage.prompt":
+                    (part.totalUsage as any)?.promptTokens || 0,
+                  "ai.token_usage.completion":
+                    (part.totalUsage as any)?.completionTokens || 0,
+                  "ai.token_usage.total":
+                    (part.totalUsage as any)?.totalTokens || 0,
                   "chat.duration_ms": duration,
                   "chat.success": true,
                 });
                 streamingSpan?.end();
-                
+
                 return metadata;
               }
             },

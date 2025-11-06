@@ -34,6 +34,7 @@ export interface Project {
   name: string;
   description?: string;
   techStack: string[];
+  systemPrompt?: string;
   userId: string;
   isArchived: boolean;
   versions?: ProjectVersion[];
@@ -83,6 +84,7 @@ export interface ProjectRepository {
       name?: string;
       description?: string;
       techStack?: string[];
+      systemPrompt?: string;
     },
   ): Promise<Project>;
   archiveProject(userId: string, projectId: string): Promise<void>;

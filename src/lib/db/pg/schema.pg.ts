@@ -124,6 +124,7 @@ export const ProjectTable = pgTable("project", {
   name: text("name").notNull(),
   description: text("description"),
   techStack: text("tech_stack").array().notNull().default(sql`ARRAY[]::text[]`),
+  systemPrompt: text("system_prompt"),
   userId: uuid("user_id")
     .notNull()
     .references(() => UserTable.id, { onDelete: "cascade" }),
