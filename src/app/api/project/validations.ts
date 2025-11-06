@@ -17,6 +17,7 @@ export const updateProjectSchema = z.object({
   name: z.string().min(1).max(100).optional(),
   description: z.string().max(500).optional(),
   techStack: z.array(z.string()).optional(),
+  systemPrompt: z.string().max(5000).optional(), // Phase 3: AI Context XML prompt
   isArchived: z.boolean().optional(),
 });
 

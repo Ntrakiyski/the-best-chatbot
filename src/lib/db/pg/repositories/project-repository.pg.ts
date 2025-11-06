@@ -117,6 +117,7 @@ export const pgProjectRepository: ProjectRepository = {
       name?: string;
       description?: string;
       techStack?: string[];
+      systemPrompt?: string;
     },
   ): Promise<Project> {
     const [updated] = await pgDb
