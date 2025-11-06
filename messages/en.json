@@ -42,7 +42,11 @@
     "createWithExample": "Create With Example",
     "resultsFound": "{count} results found",
     "youAreAnExpertIn": "You are an expert in {role}",
-    "sharedBy": "Shared by {userName}"
+    "sharedBy": "Shared by {userName}",
+    "name": "Name",
+    "creating": "Creating...",
+    "view": "View",
+    "archived": "Archived"
   },
   "Error": {},
   "Info": {
@@ -382,6 +386,17 @@
     "reportAnIssue": "Report an issue",
     "joinCommunity": "Join Community"
   },
+  "Project": {
+    "createProject": "Create Project",
+    "createProjectDescription": "Create a new project to organize your work and deliverables.",
+    "namePlaceholder": "My Awesome Project",
+    "descriptionPlaceholder": "Describe what this project is about...",
+    "techStackPlaceholder": "React, Node.js, PostgreSQL",
+    "techStackHint": "Separate technologies with commas",
+    "created": "Project created successfully",
+    "notFound": "Project not found",
+    "notFoundDescription": "The project you're looking for doesn't exist or you don't have access to it."
+  },
   "Projects": {
     "title": "Projects",
     "myProjects": "My Projects",
@@ -424,6 +439,8 @@
     "deliverableUpdated": "Deliverable updated successfully",
     "deliverableDeleted": "Deliverable deleted successfully",
     "statusUpdated": "Status updated successfully",
+    "systemPrompt": "System Prompt",
+    "systemPromptHelp": "AI context and instructions (XML format)",
     "failedToCreateProject": "Failed to create project",
     "failedToUpdateProject": "Failed to update project",
     "failedToArchiveProject": "Failed to archive project",

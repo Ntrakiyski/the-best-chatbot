@@ -147,6 +147,7 @@ describe("project-context", () => {
             name: "V1.0",
             description: "Initial version",
             createdAt: new Date(),
+            updatedAt: new Date(),
             deliverables: [
               {
                 id: "deliv-1",
@@ -278,6 +279,7 @@ describe("project-context", () => {
             name: "V1.0",
             description: undefined,
             createdAt: new Date(),
+            updatedAt: new Date(),
             deliverables: [],
           },
           {
@@ -286,6 +288,7 @@ describe("project-context", () => {
             name: "V2.0",
             description: undefined,
             createdAt: new Date(),
+            updatedAt: new Date(),
             deliverables: [],
           },
         ],
@@ -382,6 +385,7 @@ describe("project-context", () => {
             name: "V1.0",
             description: undefined,
             createdAt: new Date(),
+            updatedAt: new Date(),
             deliverables: [
               {
                 id: "deliv-1",
