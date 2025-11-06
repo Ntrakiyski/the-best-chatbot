@@ -10,8 +10,8 @@ test.describe("Project CRUD Operations", () => {
   test.use({ storageState: TEST_USERS.editor.authFile });
 
   let testProjectId: string;
-  let testVersionId: string;
-  let testDeliverableId: string;
+  // let testVersionId: string;
+  // let testDeliverableId: string;
 
   test.beforeEach(async ({ page }) => {
     // Create a test project for CRUD operations
@@ -117,7 +117,7 @@ test.describe("Project CRUD Operations", () => {
     // Click edit button (ghost button with Edit2 icon)
     const editButton = firstVersion
       .locator('button[class*="ghost"]')
-      .filter({ has: page.locator('svg') })
+      .filter({ has: page.locator("svg") })
       .first();
     await editButton.click();
 
@@ -166,7 +166,7 @@ test.describe("Project CRUD Operations", () => {
     // Click delete button (trash icon)
     const deleteButton = versionCard
       .locator('button[class*="destructive"]')
-      .or(versionCard.locator('button').filter({ has: page.locator('svg') }))
+      .or(versionCard.locator("button").filter({ has: page.locator("svg") }))
       .last();
     await deleteButton.click();
 
@@ -206,7 +206,10 @@ test.describe("Project CRUD Operations", () => {
     const deliverableName = `Test Deliverable ${Date.now()}`;
     const deliverableDescription = "This is a test deliverable";
 
-    await versionCard.locator('input[type="text"]').last().fill(deliverableName);
+    await versionCard
+      .locator('input[type="text"]')
+      .last()
+      .fill(deliverableName);
     await versionCard.locator("textarea").last().fill(deliverableDescription);
 
     // Submit form
@@ -266,8 +269,8 @@ test.describe("Project CRUD Operations", () => {
 
     // Click edit button (Edit2 icon)
     const editButton = firstDeliverable
-      .locator('button')
-      .filter({ has: page.locator('svg') })
+      .locator("button")
+      .filter({ has: page.locator("svg") })
       .first();
     await editButton.click();
 
@@ -277,7 +280,10 @@ test.describe("Project CRUD Operations", () => {
     // Update deliverable
     const updatedName = `Updated Deliverable ${Date.now()}`;
     await firstDeliverable.locator('input[type="text"]').first().clear();
-    await firstDeliverable.locator('input[type="text"]').first().fill(updatedName);
+    await firstDeliverable
+      .locator('input[type="text"]')
+      .first()
+      .fill(updatedName);
 
     // Save changes
     await firstDeliverable.getByRole("button", { name: "Save" }).click();
@@ -299,7 +305,10 @@ test.describe("Project CRUD Operations", () => {
     const versionCard = page.locator('[data-testid^="version-card-"]').first();
     await versionCard.getByText("Add Deliverable").click();
     const deliverableToDelete = `Delete Me ${Date.now()}`;
-    await versionCard.locator('input[type="text"]').last().fill(deliverableToDelete);
+    await versionCard
+      .locator('input[type="text"]')
+      .last()
+      .fill(deliverableToDelete);
     await versionCard.getByRole("button", { name: "Create" }).click();
     await page.waitForTimeout(1000);
 
@@ -311,8 +320,8 @@ test.describe("Project CRUD Operations", () => {
 
     // Click delete button (trash icon)
     const deleteButton = deliverable
-      .locator('button')
-      .filter({ has: page.locator('svg') })
+      .locator("button")
+      .filter({ has: page.locator("svg") })
       .last();
     await deleteButton.click();
 
@@ -365,4 +374,3 @@ test.describe("Project CRUD Operations", () => {
     });
   });
 });
-

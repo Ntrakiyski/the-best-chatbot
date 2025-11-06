@@ -49,19 +49,14 @@ export function useProjects(options: SWRConfiguration = {}) {
       );
 
       await archiveProjectAction(projectId);
-      toast.success("Success", {
-        description: "Project archived successfully",
-      });
+      toast.success("Project archived successfully");
 
       // Revalidate to get fresh data
       mutate();
-    } catch (error) {
+    } catch (_error) {
       // Rollback on error
       mutate();
-      toast.error("Error", {
-        description:
-          error instanceof Error ? error.message : "Failed to archive project",
-      });
+      toast.error("Error");
     }
   };
 
@@ -74,21 +69,14 @@ export function useProjects(options: SWRConfiguration = {}) {
       );
 
       await unarchiveProjectAction(projectId);
-      toast.success("Success", {
-        description: "Project unarchived successfully",
-      });
+      toast.success("Project unarchived successfully");
 
       // Revalidate to get fresh data
       mutate();
-    } catch (error) {
+    } catch (_error) {
       // Rollback on error
       mutate();
-      toast.error("Error", {
-        description:
-          error instanceof Error
-            ? error.message
-            : "Failed to unarchive project",
-      });
+      toast.error("Error");
     }
   };
 
@@ -101,19 +89,14 @@ export function useProjects(options: SWRConfiguration = {}) {
       );
 
       await deleteProjectAction(projectId);
-      toast.success("Success", {
-        description: "Project deleted successfully",
-      });
+      toast.success("Project deleted successfully");
 
       // Revalidate to get fresh data
       mutate();
-    } catch (error) {
+    } catch (_error) {
       // Rollback on error
       mutate();
-      toast.error("Error", {
-        description:
-          error instanceof Error ? error.message : "Failed to delete project",
-      });
+      toast.error("Error");
     }
   };
 

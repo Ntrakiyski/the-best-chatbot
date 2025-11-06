@@ -28,6 +28,7 @@ import { DefaultToolIcon } from "./default-tool-icon";
 import equal from "lib/equal";
 import { EMOJI_DATA } from "lib/const";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useProjects } from "@/hooks/queries/use-projects";
 
 type MentionItemType = {
   id: string;
@@ -153,7 +154,7 @@ export function ChatMentionInputSuggestion({
   onOpenChange?: (open: boolean) => void;
   children?: React.ReactNode;
   style?: React.CSSProperties;
-  disabledType?: ("mcp" | "workflow" | "defaultTool" | "agent")[];
+  disabledType?: ("mcp" | "workflow" | "defaultTool" | "agent" | "project")[];
 }) {
   const t = useTranslations("Common");
   const [mcpList, workflowList, agentList] = appStore(
@@ -167,6 +168,9 @@ export function ChatMentionInputSuggestion({
   const [selectedIndex, setSelectedIndex] = useState(0);
   const itemRefs = useRef<{ [key: string]: HTMLButtonElement | null }>({});
   const isMobile = useIsMobile();
+
+  // Fetch projects for mentions
+  const { activeProjects } = useProjects();
 
   const mcpMentions = useMemo(() => {
     if (disabledType?.includes("mcp")) return [];
@@ -299,6 +303,52 @@ export function ChatMentionInputSuggestion({
         };
       });
   }, [agentList, selectedIds, disabledType, searchValue]);
+
+  const projectMentions = useMemo(() => {
+    if (disabledType?.includes("project")) return [];
+    if (!activeProjects.length) return [];
+
+    return activeProjects
+      .filter(
+        (project) =>
+          !searchValue ||
+          project.name.toLowerCase().includes(searchValue.toLowerCase()),
+      )
+      .map((project, i) => {
+        const projectIcon = (project as any).icon; // Projects may not have icons yet
+        const id = JSON.stringify({
+          type: "project",
+          name: project.name,
+          projectId: project.id,
+          description: project.description,
+          icon: projectIcon,
+        });
+        return {
+          id: project.id,
+          type: "project",
+          label: project.name,
+          onSelect: () =>
+            onSelectMention({
+              label: `project("${project.name}")`,
+              id,
+            }),
+          icon: (
+            <Avatar
+              style={projectIcon?.style}
+              className="size-3.5 ring-[1px] ring-input rounded-full"
+            >
+              <AvatarImage
+                src={projectIcon?.value || EMOJI_DATA[i % EMOJI_DATA.length]}
+              />
+              <AvatarFallback>{project.name.slice(0, 1)}</AvatarFallback>
+            </Avatar>
+          ),
+          suffix: selectedIds?.includes(id) && (
+            <CheckIcon className="size-3 ml-auto" />
+          ),
+        };
+      });
+  }, [activeProjects, selectedIds, disabledType, searchValue]);
 
   const workflowMentions = useMemo(() => {
     if (disabledType?.includes("workflow")) return [];
@@ -442,11 +492,18 @@ export function ChatMentionInputSuggestion({
   const allMentions = useMemo(() => {
     return [
       ...agentMentions,
+      ...projectMentions,
       ...workflowMentions,
       ...defaultToolMentions,
       ...mcpMentions,
     ];
-  }, [agentMentions, workflowMentions, defaultToolMentions, mcpMentions]);
+  }, [
+    agentMentions,
+    projectMentions,
+    workflowMentions,
+    defaultToolMentions,
+    mcpMentions,
+  ]);
 
   // Reset selected index when mentions change
   useEffect(() => {
