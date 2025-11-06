@@ -21,6 +21,7 @@ import {
 } from "./storage-utils";
 import { FileNotFoundError } from "lib/errors";
 import { generateUUID } from "lib/utils";
+import * as Sentry from "@sentry/nextjs";
 
 const STORAGE_PREFIX = resolveStoragePrefix();
 
@@ -146,6 +147,9 @@ export const createS3FileStorage = (): FileStorage => {
     },
 
     async download(key) {
+      // Custom event #10: file.storage.activity (download)
+      const startTime = Date.now();
+      
       try {
         const res = await s3.send(
           new GetObjectCommand({ Bucket: bucket, Key: key }),
@@ -161,8 +165,37 @@ export const createS3FileStorage = (): FileStorage => {
           stream.once("end", () => resolve());
           stream.once("error", (e) => reject(e));
         });
-        return Buffer.concat(chunks);
+        const buffer = Buffer.concat(chunks);
+        
+        // Track successful download
+        const duration = Date.now() - startTime;
+        Sentry.addBreadcrumb({
+          category: "file-storage",
+          message: "File downloaded",
+          level: "info",
+          data: {
+            driver: "s3",
+            operation: "download",
+            size: buffer.byteLength,
+            duration,
+          },
+        });
+        
+        return buffer;
       } catch (error: unknown) {
+        const duration = Date.now() - startTime;
+        Sentry.captureException(error, {
+          tags: {
+            component: "file-storage",
+            driver: "s3",
+            operation: "download",
+          },
+          extra: {
+            key,
+            duration,
+          },
+        });
+        
         if ((error as any)?.$metadata?.httpStatusCode === 404) {
           throw new FileNotFoundError(key, error);
         }
@@ -214,9 +247,42 @@ export const createS3FileStorage = (): FileStorage => {
     },
 
     async getDownloadUrl(key) {
-      const command = new GetObjectCommand({ Bucket: bucket, Key: key });
-      const url = await getSignedUrl(s3, command, { expiresIn: 3600 });
-      return url;
+      // Custom event #10: file.storage.activity (presign)
+      const startTime = Date.now();
+      
+      try {
+        const command = new GetObjectCommand({ Bucket: bucket, Key: key });
+        const url = await getSignedUrl(s3, command, { expiresIn: 3600 });
+        
+        // Track successful presign operation
+        const duration = Date.now() - startTime;
+        Sentry.addBreadcrumb({
+          category: "file-storage",
+          message: "Presigned URL generated",
+          level: "info",
+          data: {
+            driver: "s3",
+            operation: "presign",
+            duration,
+          },
+        });
+        
+        return url;
+      } catch (error: unknown) {
+        const duration = Date.now() - startTime;
+        Sentry.captureException(error, {
+          tags: {
+            component: "file-storage",
+            driver: "s3",
+            operation: "presign",
+          },
+          extra: {
+            key,
+            duration,
+          },
+        });
+        throw error;
+      }
     },
   } satisfies FileStorage;
 };

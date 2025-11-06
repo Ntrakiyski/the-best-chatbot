@@ -18,6 +18,7 @@ import { convertDBNodeToUINode } from "../shared.workflow";
 import globalLogger from "logger";
 import { ConsolaInstance } from "consola";
 import { colorize } from "consola/utils";
+import * as Sentry from "@sentry/nextjs";
 
 /**
  * Maps node kinds to their corresponding executor functions.
@@ -189,18 +190,65 @@ export const createWorkflowExecutor = (workflow: {
     });
 
   // Set up event logging for workflow execution monitoring
+  let workflowSpan: ReturnType<typeof Sentry.startInactiveSpan> | null = null;
+  
   app.subscribe((event) => {
     if (event.eventType == "WORKFLOW_START") {
       needTable = buildNeedTable(workflow.edges);
       logger.debug(
         `[${event.eventType}] ${workflow.nodes.length} nodes, ${workflow.edges.length} edges`,
       );
+      
+      // Custom event #7: workflow.execution.started
+      workflowSpan = Sentry.startInactiveSpan({
+        name: "workflow.execution",
+        op: "workflow.execute",
+        attributes: {
+          "workflow.node_count": workflow.nodes.length,
+          "workflow.edge_count": workflow.edges.length,
+        },
+      });
+      
+      Sentry.addBreadcrumb({
+        category: "workflow",
+        message: "Workflow execution started",
+        level: "info",
+        data: {
+          nodeCount: workflow.nodes.length,
+          edgeCount: workflow.edges.length,
+        },
+      });
     } else if (event.eventType == "WORKFLOW_END") {
       const duration = ((event.endedAt - event.startedAt) / 1000).toFixed(2);
       const color = event.isOk ? "green" : "red";
       logger.debug(
         `[${event.eventType}] ${colorize(color, event.isOk ? "SUCCESS" : "FAILED")} ${duration}s`,
       );
+      
+      // Custom event #8: workflow.execution.completed
+      if (workflowSpan) {
+        workflowSpan.setAttributes({
+          "workflow.success": event.isOk,
+          "workflow.duration_ms": event.endedAt - event.startedAt,
+        });
+        
+        if (!event.isOk && event.error) {
+          workflowSpan.setStatus({ code: 2, message: "error" });
+          Sentry.captureException(event.error, {
+            tags: {
+              component: "workflow-executor",
+            },
+            extra: {
+              nodeCount: workflow.nodes.length,
+              edgeCount: workflow.edges.length,
+              duration: event.endedAt - event.startedAt,
+            },
+          });
+        }
+        
+        workflowSpan.end();
+      }
+      
       if (!event.isOk) {
         logger.error(event.error);
       }

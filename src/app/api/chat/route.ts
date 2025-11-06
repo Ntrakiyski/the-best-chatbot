@@ -51,6 +51,7 @@ import { nanoBananaTool, openaiImageTool } from "lib/ai/tools/image";
 import { ImageToolName } from "lib/ai/tools";
 import { buildCsvIngestionPreviewParts } from "@/lib/ai/ingest/csv-ingest";
 import { serverFileStorage } from "lib/file-storage";
+import * as Sentry from "@sentry/nextjs";
 
 const logger = globalLogger.withDefaults({
   message: colorize("blackBright", `Chat API: `),
@@ -95,6 +96,29 @@ export async function POST(request: Request) {
         projectId,
       });
       thread = await chatRepository.selectThreadDetails(newThread.id);
+      
+      // Custom event #3: chat.thread.created
+      Sentry.captureMessage("chat.thread.created", {
+        level: "info",
+        tags: {
+          component: "chat",
+          userId: session.user.id,
+        },
+        extra: {
+          threadId: id,
+          projectId,
+          timestamp: new Date().toISOString(),
+        },
+      });
+      Sentry.addBreadcrumb({
+        category: "chat",
+        message: "New chat thread created",
+        level: "info",
+        data: {
+          threadId: id,
+          hasProject: !!projectId,
+        },
+      });
     }
 
     if (thread!.userId !== session.user.id) {
@@ -328,6 +352,25 @@ export async function POST(request: Request) {
         }
         logger.info(`model: ${chatModel?.provider}/${chatModel?.model}`);
 
+        // Custom event #4: chat.streaming.started
+        const streamingStartTime = Date.now();
+        const promptLength = messages.reduce((acc, m) => {
+          return acc + (m.parts?.length || 0);
+        }, 0);
+        
+        const streamingSpan = Sentry.startInactiveSpan({
+          name: "chat.streaming",
+          op: "ai.generate",
+          attributes: {
+            "ai.model": `${chatModel?.provider}/${chatModel?.model}`,
+            "ai.provider": chatModel?.provider,
+            "ai.tool_count": Object.keys(vercelAITooles).length,
+            "chat.thread_id": thread!.id,
+            "chat.user_id": session.user.id,
+            "chat.prompt_length": promptLength,
+          },
+        });
+        
         const result = streamText({
           model,
           system: systemPrompt,
@@ -345,6 +388,18 @@ export async function POST(request: Request) {
             messageMetadata: ({ part }) => {
               if (part.type == "finish") {
                 metadata.usage = part.totalUsage;
+                
+                // Custom event #5: chat.streaming.completed
+                const duration = Date.now() - streamingStartTime;
+                streamingSpan?.setAttributes({
+                  "ai.token_usage.prompt": (part.totalUsage as any)?.promptTokens || 0,
+                  "ai.token_usage.completion": (part.totalUsage as any)?.completionTokens || 0,
+                  "ai.token_usage.total": (part.totalUsage as any)?.totalTokens || 0,
+                  "chat.duration_ms": duration,
+                  "chat.success": true,
+                });
+                streamingSpan?.end();
+                
                 return metadata;
               }
             },

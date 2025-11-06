@@ -41,6 +41,7 @@ import { NodeKind } from "lib/ai/workflow/workflow.interface";
 import { mcpClientsManager } from "lib/ai/mcp/mcp-manager";
 import { APP_DEFAULT_TOOL_KIT } from "lib/ai/tools/tool-kit";
 import { AppDefaultToolkit } from "lib/ai/tools";
+import * as Sentry from "@sentry/nextjs";
 
 export function filterMCPToolsByMentions(
   tools: Record<string, VercelAIMcpTool>,
@@ -122,6 +123,15 @@ export function manualToolExecuteByLastMessage(
   const toolName = getToolName(part);
 
   const tool = tools[toolName];
+  
+  // Custom event #6: tool.invocation
+  const toolStartTime = Date.now();
+  const toolType = VercelAIWorkflowToolTag.isMaybe(tool)
+    ? "workflow"
+    : VercelAIMcpToolTag.isMaybe(tool)
+      ? "mcp"
+      : "default";
+  
   return safe(() => {
     if (!tool) throw new Error(`tool not found: ${toolName}`);
     if (!ManualToolConfirmTag.isMaybe(part.output))
@@ -130,30 +140,76 @@ export function manualToolExecuteByLastMessage(
   })
     .map(({ confirm }) => {
       if (!confirm) return MANUAL_REJECT_RESPONSE_PROMPT;
-      if (VercelAIWorkflowToolTag.isMaybe(tool)) {
-        return tool.execute!(input, {
-          toolCallId: part.toolCallId,
-          abortSignal: abortSignal ?? new AbortController().signal,
-          messages: [],
-        });
-      } else if (VercelAIMcpToolTag.isMaybe(tool)) {
-        return mcpClientsManager.toolCall(
-          tool._mcpServerId,
-          tool._originToolName,
-          input,
-        );
-      }
-      return tool.execute!(input, {
-        toolCallId: part.toolCallId,
-        abortSignal: abortSignal ?? new AbortController().signal,
-        messages: [],
-      });
+      
+      return Sentry.startSpan(
+        {
+          name: `tool.invocation.${toolType}`,
+          op: "tool.execute",
+          attributes: {
+            "tool.name": toolName,
+            "tool.type": toolType,
+            "tool.call_id": part.toolCallId,
+          },
+        },
+        () => {
+          if (VercelAIWorkflowToolTag.isMaybe(tool)) {
+            return tool.execute!(input, {
+              toolCallId: part.toolCallId,
+              abortSignal: abortSignal ?? new AbortController().signal,
+              messages: [],
+            });
+          } else if (VercelAIMcpToolTag.isMaybe(tool)) {
+            return mcpClientsManager.toolCall(
+              tool._mcpServerId,
+              tool._originToolName,
+              input,
+            );
+          }
+          return tool.execute!(input, {
+            toolCallId: part.toolCallId,
+            abortSignal: abortSignal ?? new AbortController().signal,
+            messages: [],
+          });
+        },
+      );
     })
-    .ifFail((error) => ({
-      isError: true,
-      statusMessage: `tool call fail: ${toolName}`,
-      error: errorToString(error),
-    }))
+    .ifFail((error) => {
+      // Track tool failure
+      const duration = Date.now() - toolStartTime;
+      Sentry.captureException(error, {
+        tags: {
+          component: "tool-execution",
+          toolName,
+          toolType,
+        },
+        extra: {
+          duration,
+          toolCallId: part.toolCallId,
+        },
+      });
+      
+      return {
+        isError: true,
+        statusMessage: `tool call fail: ${toolName}`,
+        error: errorToString(error),
+      };
+    })
+    .map((result) => {
+      // Track successful tool execution
+      const duration = Date.now() - toolStartTime;
+      Sentry.addBreadcrumb({
+        category: "tool",
+        message: `Tool executed: ${toolName}`,
+        level: "info",
+        data: {
+          toolName,
+          toolType,
+          duration,
+          success: true,
+        },
+      });
+      return result;
+    })
     .unwrap();
 }
 
