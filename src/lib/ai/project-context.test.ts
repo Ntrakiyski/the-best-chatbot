@@ -339,8 +339,8 @@ describe("project-context", () => {
       };
 
       const prompt = buildProjectContextPrompt(project);
-      expect(prompt).toContain("PROJECT CONTEXT");
-      expect(prompt).toContain("mentions this project");
+      expect(prompt).toContain("Project Context");
+      expect(prompt).toContain("working on a project");
       expect(prompt).toContain("<project_context>");
       expect(prompt).toContain("<name>Test Project</name>");
       expect(prompt).toContain("</project_context>");

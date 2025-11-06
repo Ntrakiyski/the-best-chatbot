@@ -1,17 +1,24 @@
 /**
  * Phase 3: AI Context Injection
- * Utilities for building XML-formatted project context to inject into AI system prompts
+ * 
+ * This module provides utilities for building XML-formatted project context
+ * that can be injected into chat system prompts, enabling AI to understand
+ * project structure, tech stack, deliverables, and custom instructions.
  */
 
-import { ProjectWithVersions, Deliverable } from "@/types/project";
+import type { ProjectWithVersions, Deliverable } from "app-types/project";
 
 /**
- * Escapes XML special characters to prevent XML injection
+ * Escapes special XML characters to prevent injection attacks
+ * 
+ * @param str - String to escape (can be undefined)
+ * @returns Escaped string safe for XML
  */
-function escapeXml(str: string | undefined): string {
+export function escapeXml(str: string | undefined): string {
   if (!str) return "";
+  
   return str
-    .replace(/&/g, "&amp;")
+    .replace(/&/g, "&amp;")   // Must be first to avoid double-escaping
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;")
@@ -19,9 +26,12 @@ function escapeXml(str: string | undefined): string {
 }
 
 /**
- * Formats a deliverable status as an emoji indicator
+ * Formats deliverable status into emoji for better LLM readability
+ * 
+ * @param status - Deliverable status
+ * @returns Emoji representing the status
  */
-function formatDeliverableStatus(status: string): string {
+export function formatDeliverableStatus(status: string): string {
   switch (status) {
     case "done":
       return "✅";
@@ -30,118 +40,115 @@ function formatDeliverableStatus(status: string): string {
     case "not-started":
       return "⭕";
     default:
-      return "❓";
+      return "⭕";
   }
 }
 
 /**
- * Builds XML for a single deliverable
+ * Builds XML representation of a single deliverable
+ * 
+ * @param deliverable - Deliverable to format
+ * @returns XML string for deliverable
  */
-function buildDeliverableXml(deliverable: Deliverable): string {
-  const statusEmoji = formatDeliverableStatus(deliverable.status);
-  let xml = `    <deliverable status="${deliverable.status}" emoji="${statusEmoji}">
-      <name>${escapeXml(deliverable.name)}</name>`;
-
+export function buildDeliverableXml(deliverable: Deliverable): string {
+  const emoji = formatDeliverableStatus(deliverable.status);
+  
+  let xml = `      <deliverable status="${deliverable.status}" emoji="${emoji}">\n`;
+  xml += `        <name>${escapeXml(deliverable.name)}</name>\n`;
+  
   if (deliverable.description) {
-    xml += `\n      <description>${escapeXml(deliverable.description)}</description>`;
+    xml += `        <description>${escapeXml(deliverable.description)}</description>\n`;
   }
-
-  xml += `\n    </deliverable>`;
+  
+  xml += `      </deliverable>`;
+  
   return xml;
 }
 
 /**
- * Builds the complete XML project context for AI injection
- *
- * Structure:
- * <project_context>
- *   <project>
- *     <name>...</name>
- *     <description>...</description>
- *     <tech_stack>...</tech_stack>
- *     <system_prompt><!-- User's custom prompt --></system_prompt>
- *     <active_version>
- *       <name>...</name>
- *       <deliverables>...</deliverables>
- *     </active_version>
- *   </project>
- * </project_context>
+ * Builds complete XML structure for project context
+ * 
+ * @param project - Project with versions and deliverables
+ * @returns Complete XML structure
  */
 export function buildProjectContextXml(project: ProjectWithVersions): string {
-  let xml = `<project_context>\n  <project>\n    <name>${escapeXml(project.name)}</name>`;
-
-  // Add project description if present
+  let xml = "<project_context>\n";
+  xml += "  <project>\n";
+  xml += `    <name>${escapeXml(project.name)}</name>\n`;
+  
   if (project.description) {
-    xml += `\n    <description>${escapeXml(project.description)}</description>`;
+    xml += `    <description>${escapeXml(project.description)}</description>\n`;
   }
-
-  // Add tech stack
+  
+  // Tech stack
   if (project.techStack && project.techStack.length > 0) {
-    xml += `\n    <tech_stack>`;
+    xml += "    <tech_stack>\n";
     project.techStack.forEach((tech) => {
-      xml += `\n      <technology>${escapeXml(tech)}</technology>`;
+      xml += `      <technology>${escapeXml(tech)}</technology>\n`;
     });
-    xml += `\n    </tech_stack>`;
+    xml += "    </tech_stack>\n";
+  } else {
+    xml += "    <tech_stack />\n";
   }
-
-  // Add custom system prompt if present
-  if (project.systemPrompt && project.systemPrompt.trim()) {
-    xml += `\n    <system_prompt>\n${escapeXml(project.systemPrompt).trim()}\n    </system_prompt>`;
+  
+  // Custom system prompt
+  if (project.systemPrompt) {
+    xml += "    <system_prompt>\n";
+    xml += `      ${escapeXml(project.systemPrompt)}\n`;
+    xml += "    </system_prompt>\n";
   }
-
-  // Find active version (first version, or most recent)
-  const activeVersion =
-    project.versions && project.versions.length > 0
-      ? project.versions[0]
-      : null;
-
-  if (activeVersion) {
-    xml += `\n    <active_version>\n      <name>${escapeXml(activeVersion.name)}</name>`;
-
+  
+  // Active version (first version only)
+  if (project.versions && project.versions.length > 0) {
+    const activeVersion = project.versions[0];
+    xml += "    <active_version>\n";
+    xml += `      <name>${escapeXml(activeVersion.name)}</name>\n`;
+    
     if (activeVersion.description) {
-      xml += `\n      <description>${escapeXml(activeVersion.description)}</description>`;
+      xml += `      <description>${escapeXml(activeVersion.description)}</description>\n`;
     }
-
-    // Add deliverables
+    
+    // Deliverables
     if (activeVersion.deliverables && activeVersion.deliverables.length > 0) {
-      xml += `\n      <deliverables>`;
+      xml += "      <deliverables>\n";
       activeVersion.deliverables.forEach((deliverable) => {
-        xml += `\n${buildDeliverableXml(deliverable)}`;
+        xml += buildDeliverableXml(deliverable) + "\n";
       });
-      xml += `\n      </deliverables>`;
+      xml += "      </deliverables>\n";
     }
-
-    xml += `\n    </active_version>`;
+    
+    xml += "    </active_version>\n";
   }
-
-  xml += `\n  </project>\n</project_context>`;
-
+  
+  xml += "  </project>\n";
+  xml += "</project_context>";
+  
   return xml;
 }
 
 /**
- * Builds a system prompt section that wraps the project context
- * This is the main entry point for chat API integration
+ * Main entry point: Builds complete project context prompt for AI
+ * 
+ * @param project - Project to build context from (can be null)
+ * @returns Formatted prompt with XML context, or null if no project
  */
 export function buildProjectContextPrompt(
   project: ProjectWithVersions | null,
 ): string | null {
   if (!project) return null;
-
-  const projectXml = buildProjectContextXml(project);
-
-  return `
+  
+  const xml = buildProjectContextXml(project);
+  
+  const prompt = `
 # Project Context
 
-You are working on a specific project. The project details are provided below in XML format.
-Use this information to provide context-aware assistance.
+You are working on a project that the user has mentioned. Here is the structured project information:
 
-${projectXml}
+${xml}
 
-Important:
-- Refer to the project by name when relevant
-- Use the tech stack information to provide framework-specific guidance
-- Reference deliverables and their status when discussing project progress
-- Follow any custom instructions provided in the system_prompt section
-`;
+Use this context to provide relevant, project-aware responses. Reference the tech stack, deliverables, and any custom instructions provided in the system_prompt section.
+`.trim();
+  
+  return prompt;
 }
+
