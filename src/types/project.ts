@@ -42,6 +42,18 @@ export interface Project {
   updatedAt: Date;
 }
 
+// Summary type for UI components (similar to AgentSummary, WorkflowSummary)
+export interface ProjectSummary {
+  id: string;
+  name: string;
+  description?: string;
+  icon?: {
+    type: "emoji";
+    value: string;
+    style?: Record<string, string>;
+  };
+}
+
 // Repository Input/Output Types
 export interface CreateProjectInput {
   name: string;

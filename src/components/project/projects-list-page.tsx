@@ -23,7 +23,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "ui/dropdown-menu";
-import { notify } from "ui/notify";
+import { notify } from "lib/notify";
 
 export default function ProjectsListPage() {
   const t = useTranslations();
@@ -39,7 +39,7 @@ export default function ProjectsListPage() {
   } = useProjects();
 
   // Handle delete with confirmation
-  const handleDelete = async (projectId: string, projectName: string) => {
+  const handleDelete = async (projectId: string, _projectName: string) => {
     const confirmed = await notify.confirm({
       title: t("Projects.confirmDeleteProject"),
       description: t("Projects.confirmDeleteProjectDescription"),
@@ -324,4 +324,3 @@ function ProjectsGrid({
     </div>
   );
 }
-

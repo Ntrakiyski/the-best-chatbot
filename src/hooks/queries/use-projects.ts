@@ -5,7 +5,7 @@ import { fetcher } from "lib/utils";
 import { Project, ProjectWithVersions } from "app-types/project";
 import { handleErrorWithToast } from "ui/shared-toast";
 import { authClient } from "auth/client";
-import { toast } from "ui/use-toast";
+import { toast } from "sonner";
 import {
   archiveProjectAction,
   unarchiveProjectAction,
@@ -43,77 +43,60 @@ export function useProjects(options: SWRConfiguration = {}) {
   const archiveProject = async (projectId: string) => {
     try {
       // Optimistic update
-      mutate(projects.filter((p) => p.id !== projectId), { revalidate: false });
+      mutate(
+        projects.filter((p) => p.id !== projectId),
+        { revalidate: false },
+      );
 
       await archiveProjectAction(projectId);
-      toast({
-        title: "Success",
-        description: "Project archived successfully",
-      });
+      toast.success("Project archived successfully");
 
       // Revalidate to get fresh data
       mutate();
-    } catch (error) {
+    } catch (_error) {
       // Rollback on error
       mutate();
-      toast({
-        title: "Error",
-        description:
-          error instanceof Error ? error.message : "Failed to archive project",
-        variant: "destructive",
-      });
+      toast.error("Error");
     }
   };
 
   const unarchiveProject = async (projectId: string) => {
     try {
       // Optimistic update
-      mutate(projects.filter((p) => p.id !== projectId), { revalidate: false });
+      mutate(
+        projects.filter((p) => p.id !== projectId),
+        { revalidate: false },
+      );
 
       await unarchiveProjectAction(projectId);
-      toast({
-        title: "Success",
-        description: "Project unarchived successfully",
-      });
+      toast.success("Project unarchived successfully");
 
       // Revalidate to get fresh data
       mutate();
-    } catch (error) {
+    } catch (_error) {
       // Rollback on error
       mutate();
-      toast({
-        title: "Error",
-        description:
-          error instanceof Error
-            ? error.message
-            : "Failed to unarchive project",
-        variant: "destructive",
-      });
+      toast.error("Error");
     }
   };
 
   const deleteProject = async (projectId: string) => {
     try {
       // Optimistic update
-      mutate(projects.filter((p) => p.id !== projectId), { revalidate: false });
+      mutate(
+        projects.filter((p) => p.id !== projectId),
+        { revalidate: false },
+      );
 
       await deleteProjectAction(projectId);
-      toast({
-        title: "Success",
-        description: "Project deleted successfully",
-      });
+      toast.success("Project deleted successfully");
 
       // Revalidate to get fresh data
       mutate();
-    } catch (error) {
+    } catch (_error) {
       // Rollback on error
       mutate();
-      toast({
-        title: "Error",
-        description:
-          error instanceof Error ? error.message : "Failed to delete project",
-        variant: "destructive",
-      });
+      toast.error("Error");
     }
   };
 
