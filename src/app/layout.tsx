@@ -8,6 +8,8 @@ import {
 import { Toaster } from "ui/sonner";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale } from "next-intl/server";
+import { RegisterSW } from "@/components/pwa/register-sw";
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -21,6 +23,7 @@ export const metadata: Metadata = {
   title: "better-chatbot",
   description:
     "Better Chatbot is a chatbot that uses the Tools to answer questions.",
+  themeColor: "#0f172a",
 };
 
 export default async function RootLayout({
@@ -47,6 +50,7 @@ export default async function RootLayout({
               <div id="root">
                 {children}
                 <Toaster richColors />
+                <RegisterSW />
               </div>
             </NextIntlClientProvider>
           </ThemeStyleProvider>
