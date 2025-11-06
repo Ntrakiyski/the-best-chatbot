@@ -172,6 +172,11 @@ export function ChatMentionInputSuggestion({
   // Fetch projects for mentions
   const { activeProjects } = useProjects();
 
+  // Debug logging for project mentions
+  useEffect(() => {
+    console.log("[ChatMentionInput] Active projects loaded:", activeProjects);
+  }, [activeProjects]);
+
   const mcpMentions = useMemo(() => {
     if (disabledType?.includes("mcp")) return [];
     const filtered = mcpList
@@ -305,10 +310,16 @@ export function ChatMentionInputSuggestion({
   }, [agentList, selectedIds, disabledType, searchValue]);
 
   const projectMentions = useMemo(() => {
-    if (disabledType?.includes("project")) return [];
-    if (!activeProjects.length) return [];
+    if (disabledType?.includes("project")) {
+      console.log("[ChatMentionInput] Projects disabled in disabledType");
+      return [];
+    }
+    if (!activeProjects.length) {
+      console.log("[ChatMentionInput] No active projects available");
+      return [];
+    }
 
-    return activeProjects
+    const filteredProjects = activeProjects
       .filter(
         (project) =>
           !searchValue ||
@@ -348,6 +359,13 @@ export function ChatMentionInputSuggestion({
           ),
         };
       });
+
+    console.log(
+      "[ChatMentionInput] Project mentions generated:",
+      filteredProjects.length,
+      "projects",
+    );
+    return filteredProjects;
   }, [activeProjects, selectedIds, disabledType, searchValue]);
 
   const workflowMentions = useMemo(() => {
