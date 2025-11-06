@@ -391,6 +391,7 @@
     "createProjectDescription": "Create a new project to organize your work and deliverables.",
     "namePlaceholder": "My Awesome Project",
     "descriptionPlaceholder": "Describe what this project is about...",
+    "techStack": "Tech Stack",
     "techStackPlaceholder": "React, Node.js, PostgreSQL",
     "techStackHint": "Separate technologies with commas",
     "created": "Project created successfully",
