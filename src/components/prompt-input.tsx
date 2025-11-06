@@ -302,6 +302,19 @@ export default function PromptInput({
     [mentions, threadId],
   );
 
+  const onSelectProject = useCallback(
+    (project: any) => {
+      addMention({
+        type: "project",
+        name: project.name,
+        projectId: project.id,
+        description: project.description,
+        icon: project.icon,
+      });
+    },
+    [addMention],
+  );
+
   const onChangeMention = useCallback(
     (mentions: ChatMention[]) => {
       let hasAgent = false;
@@ -575,6 +588,7 @@ export default function PromptInput({
                         side="top"
                         onSelectWorkflow={onSelectWorkflow}
                         onSelectAgent={onSelectAgent}
+                        onSelectProject={onSelectProject}
                         onGenerateImage={handleGenerateImage}
                         mentions={mentions}
                       />
