@@ -24,6 +24,7 @@ export const metadata: Metadata = {
   description:
     "Better Chatbot is a chatbot that uses the Tools to answer questions.",
   themeColor: "#0f172a",
+  manifest: "/manifest.webmanifest",
 };
 
 export default async function RootLayout({
