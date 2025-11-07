@@ -112,6 +112,27 @@ const registerFileSupport = (
 registerFileSupport(staticModels.openai["gpt-5"], OPENAI_FILE_MIME_TYPES);
 registerFileSupport(staticModels.openai["gpt-5-mini"], OPENAI_FILE_MIME_TYPES);
 
+// File support for OpenRouter Visual models (vision/multimodal models)
+registerFileSupport(
+  staticModels.openRouterVisual["qwen3-vl-1"],
+  DEFAULT_FILE_PART_MIME_TYPES,
+);
+registerFileSupport(
+  staticModels.openRouterVisual["glm-4.5v-2.40"],
+  DEFAULT_FILE_PART_MIME_TYPES,
+);
+registerFileSupport(
+  staticModels.openRouterVisual["gemini-2.5-pro-11.25"],
+  GEMINI_FILE_MIME_TYPES,
+);
+
+// File support for OpenRouter regular models with vision capabilities
+// Gemini models support vision/multimodal inputs
+registerFileSupport(
+  staticModels.openRouter["gemini-quick-0.50"],
+  GEMINI_FILE_MIME_TYPES,
+);
+
 // File support for OpenRouter free models
 registerFileSupport(
   staticModels.openRouterFREE["gemini-2.0-flash-exp:free"],
