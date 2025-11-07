@@ -1,5 +1,5 @@
-import { getSession } from "@/lib/auth/session";
-import { chatRepository } from "@/lib/db/queries/chat";
+import { getSession } from "@/lib/auth/server";
+import { chatRepository } from "@/lib/db/repository";
 import { NextRequest, NextResponse } from "next/server";
 
 /**
