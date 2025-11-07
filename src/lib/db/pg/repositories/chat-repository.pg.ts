@@ -117,11 +117,15 @@ export const pgChatRepository: ChatRepository = {
     id: string,
     thread: Partial<Omit<ChatThread, "id" | "createdAt">>,
   ): Promise<ChatThread> => {
+    // Build the update object dynamically to only include provided fields
+    const updateData: Partial<typeof ChatThreadTable.$inferInsert> = {};
+    if (thread.title !== undefined) updateData.title = thread.title;
+    if (thread.projectId !== undefined) updateData.projectId = thread.projectId;
+    if (thread.userId !== undefined) updateData.userId = thread.userId;
+
     const [result] = await db
       .update(ChatThreadTable)
-      .set({
-        title: thread.title,
-      })
+      .set(updateData)
       .where(eq(ChatThreadTable.id, id))
       .returning();
     return result;
