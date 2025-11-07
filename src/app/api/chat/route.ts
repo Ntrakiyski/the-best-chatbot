@@ -323,17 +323,28 @@ export async function POST(request: Request) {
         // Phase 3: Fetch project context if thread is linked to a project
         let projectContextPrompt: string | undefined = undefined;
         if (thread?.projectId) {
+          logger.info(`Thread ${id} has projectId: ${thread.projectId}`);
           try {
             const projectWithContext = await projectRepository.findProjectById(
               thread.projectId,
               session.user.id,
             );
+            logger.info(`Fetched project: ${projectWithContext?.name}`);
             projectContextPrompt =
               buildProjectContextPrompt(projectWithContext) || undefined;
+            if (projectContextPrompt) {
+              logger.info(
+                `Built project context prompt (${projectContextPrompt.length} chars)`,
+              );
+            } else {
+              logger.warn("buildProjectContextPrompt returned null/undefined");
+            }
           } catch (error) {
             logger.error("Failed to fetch project context", error);
             // Continue without project context - graceful degradation
           }
+        } else {
+          logger.info(`Thread ${id} has no projectId set`);
         }
 
         const systemPrompt = mergeSystemPrompt(
@@ -342,6 +353,12 @@ export async function POST(request: Request) {
           buildMcpServerCustomizationsSystemPrompt(mcpServerCustomizations),
           !supportToolCall && buildToolCallUnsupportedModelSystemPrompt,
         );
+
+        if (projectContextPrompt) {
+          logger.info(
+            `System prompt includes project context (total length: ${systemPrompt.length})`,
+          );
+        }
 
         const IMAGE_TOOL: Record<string, Tool> = useImageTool
           ? {
