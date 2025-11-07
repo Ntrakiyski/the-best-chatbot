@@ -94,13 +94,28 @@ export async function POST(request: Request) {
       const projectMention = mentions.find((m) => m.type === "project");
       const projectId = projectMention?.projectId || null;
 
+      if (projectId) {
+        logger.info(
+          `[NEW THREAD] Extracted projectId from mentions: ${projectId}`,
+        );
+      } else {
+        logger.info(`[NEW THREAD] No project mention found in this message`);
+      }
+
       const newThread = await chatRepository.insertThread({
         id,
         title: "",
         userId: session.user.id,
         projectId,
       });
+      logger.info(
+        `[NEW THREAD] Created thread with projectId: ${newThread.projectId || "null"}`,
+      );
+
       thread = await chatRepository.selectThreadDetails(newThread.id);
+      logger.info(
+        `[NEW THREAD] Refreshed thread, projectId is now: ${thread?.projectId || "null"}`,
+      );
 
       // Custom event #3: chat.thread.created
       Sentry.captureMessage("chat.thread.created", {
