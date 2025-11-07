@@ -23,23 +23,28 @@ You only need **one AI Provider API Key** (OpenAI, Claude, Gemini, etc.). Everyt
 
 ---
 
-**Better Chatbot** - A better open-source AI chatbot for individuals and teams, inspired by ChatGPT, Claude, Grok, and Gemini.
+**The Best Chatbot** - An advanced, project-aware AI assistant for developers and teams. Go beyond simple chat with intelligent project management, context-aware AI, and powerful automation.
 
-• **Multi-AI Support** - Integrates all major LLMs: OpenAI, Anthropic, Google, xAI, Ollama, and more  
-• **Powerful Tools** - MCP protocol, web search, JS/Python code execution, data visualization  
-• **Image Generation** - Create and edit images with AI models (OpenAI, Google Gemini, xAI)  
-• **Automation** - Custom agents, visual workflows, artifact generation  
-• **Collaboration** - Share agents, workflows, and MCP configurations with your team  
-• **Voice Assistant** - Realtime voice chat with full MCP tool integration  
-• **Intuitive UX** - Instantly invoke any feature with `@mention`  
-• **Quick Start** - Deploy free with Vercel Deploy button
+### 🎯 What Makes This Different
 
-Built with Vercel AI SDK and Next.js, combining the best features of leading AI services into one platform.
+• **🗂️ Project-Aware AI** - Link chats to projects for context-aware assistance with tech stacks, deliverables, and custom instructions  
+• **🤖 Multi-AI Support** - Seamlessly switch between OpenAI, Anthropic, Google, xAI, Ollama, and more  
+• **🔧 MCP Protocol** - Extend capabilities with pluggable Model Context Protocol tools  
+• **⚡ Powerful Execution** - Run JS/Python code, search the web, visualize data - all from chat  
+• **🎨 Image Generation** - Create and edit images with AI (OpenAI DALL-E, Google Gemini, xAI Grok)  
+• **🔄 Visual Workflows** - Build custom automations with a graph-based workflow editor  
+• **👥 Team Collaboration** - Share agents, workflows, and configurations across your team  
+• **🎙️ Voice Assistant** - Real-time voice chat with full tool integration  
+• **📋 @ Mentions** - Instantly reference projects, agents, workflows, or tools with `@`  
+• **🚀 One-Click Deploy** - Free hosting on Vercel with database and storage included
+
+Built with **Vercel AI SDK**, **Next.js 15**, **React 19**, and **TypeScript** - a production-grade architecture combining enterprise patterns with cutting-edge AI capabilities.
 
 ## Table of Contents
 
 - [Table of Contents](#table-of-contents)
 - [Preview](#preview)
+  - [🗂️ Project-Aware AI (NEW!)](#️-project-aware-ai-new)
   - [🧩 Browser Automation with Playwright MCP](#-browser-automation-with-playwright-mcp)
   - [🔗 Visual Workflows as Custom Tools](#-visual-workflows-as-custom-tools)
   - [🤖 Custom Agents](#-custom-agents)
@@ -74,6 +79,45 @@ Built with Vercel AI SDK and Next.js, combining the best features of leading AI 
 ## Preview
 
 Get a feel for the UX — here's a quick look at what's possible.
+
+### 🗂️ Project-Aware AI (NEW!)
+
+**What it does**: Give your AI assistant full context about your projects - tech stack, deliverables, custom instructions - so it understands what you're working on.
+
+**How it works**:
+1. Create a project with your tech stack (e.g., React, Node.js, PostgreSQL)
+2. Add deliverables (tasks) with statuses: ⭕ Not Started → 🔄 In Progress → ✅ Done
+3. Optional: Define custom AI instructions for the project
+4. In any chat, type `@project("My Project")` to link it
+5. The AI instantly knows your project context!
+
+**Example conversation**:
+```
+User: @project("E-commerce Site") What frontend framework are we using?
+
+AI: Based on your project context, you're using React for the frontend! 
+     You also have PostgreSQL for the database and Node.js for the backend.
+     
+     I can see you have 5 deliverables:
+     ✅ Setup Database (done)
+     ✅ User Authentication (done) 
+     🔄 Product Catalog (in progress)
+     ⭕ Shopping Cart (not started)
+     ⭕ Payment Integration (not started)
+     
+     Would you like help with the Product Catalog feature?
+```
+
+**Key Benefits**:
+- 🎯 **Context Persistence**: Project info saved per chat thread - no need to repeat yourself
+- 🧠 **Smart Responses**: AI understands your stack and suggests appropriate solutions
+- ✅ **Task Awareness**: Ask "What's left to do?" and get a filtered list
+- 📋 **Custom Instructions**: Define project-level AI behavior (e.g., "Always use TypeScript")
+- 🔄 **Real-time Updates**: Deliverable status changes immediately reflected
+
+**[📘 Full Project Feature Guide](docs/PROJECT_FEATURE_GUIDE.md)**
+
+<br/>
 
 ### 🧩 Browser Automation with Playwright MCP
 
