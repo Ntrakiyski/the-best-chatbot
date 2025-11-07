@@ -1,6 +1,6 @@
-import { getSession } from "@/lib/auth/session";
-import { chatRepository } from "@/lib/db/queries/chat";
-import { convertToSavePart } from "@/lib/db/queries/parts";
+import { getSession } from "@/lib/auth/server";
+import { chatRepository } from "@/lib/db/repository";
+import { convertToSavePart } from "@/app/api/chat/shared.chat";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
@@ -74,6 +74,7 @@ export async function POST(request: NextRequest) {
 
     // 5. Persist message to database
     const result = await chatRepository.upsertMessage({
+      id: crypto.randomUUID(),
       threadId,
       role,
       parts: saveParts,
