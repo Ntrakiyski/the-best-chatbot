@@ -144,10 +144,37 @@ export const SelectModel = (props: PropsWithChildren<SelectModelProps>) => {
   );
 };
 
+const getProviderDisplayName = (provider: string) => {
+  switch (provider) {
+    case "openRouter":
+      return "OpenRouter";
+    case "openRouterVisual":
+      return "OpenRouter Vision";
+    case "openRouterFREE":
+      return "OpenRouter Free";
+    case "openai":
+      return "OpenAI";
+    case "google":
+      return "Google";
+    case "anthropic":
+      return "Anthropic";
+    case "xai":
+      return "xAI";
+    case "groq":
+      return "Groq";
+    case "ollama":
+      return "Ollama";
+    default:
+      return provider;
+  }
+};
+
 const ProviderHeader = memo(function ProviderHeader({
   provider,
   hasAPIKey,
 }: { provider: string; hasAPIKey: boolean }) {
+  const displayName = getProviderDisplayName(provider);
+
   return (
     <div className="text-sm text-muted-foreground flex items-center gap-1.5 group-hover:text-foreground transition-colors duration-300">
       {provider === "openai" ? (
@@ -158,7 +185,7 @@ const ProviderHeader = memo(function ProviderHeader({
       ) : (
         <ModelProviderIcon provider={provider} className="size-3" />
       )}
-      {provider}
+      {displayName}
       {!hasAPIKey && (
         <>
           <span className="text-xs ml-auto text-muted-foreground">
