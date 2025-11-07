@@ -124,6 +124,22 @@ export async function POST(request: Request) {
           hasProject: !!projectId,
         },
       });
+    } else {
+      // If thread exists but projectId is not set and a project is mentioned,
+      // associate the project with this thread now (first-time mention persists)
+      if (!thread.projectId) {
+        const projectMention = mentions.find((m) => m.type === "project");
+        if (projectMention?.projectId) {
+          await chatRepository.updateThread(thread.id, {
+            projectId: projectMention.projectId,
+          });
+          // Refresh thread details to get the updated projectId
+          thread = await chatRepository.selectThreadDetails(thread.id);
+          logger.info(
+            `Associated project ${projectMention.projectId} with existing thread ${id}`,
+          );
+        }
+      }
     }
 
     if (thread!.userId !== session.user.id) {
