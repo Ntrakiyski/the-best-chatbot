@@ -30,16 +30,23 @@ const groq = createGroq({
 });
 
 const staticModels = {
+    openRouter: {
+    "gpt-120b-0.44": openrouter("openai/gpt-oss-120b"),
+    "gemini-quick-0.50": openrouter("google/gemini-2.5-flash-lite-preview-09-2025"),
+    "grok-4-fast-0.70": openrouter("x-ai/grok-4-fast"),
+    "minimax-m2-0.60": openrouter("minimax/minimax-m2"),
+    "qwen3-coder-1": openrouter("qwen/qwen3-coder"),
+  },
+  openRouterFREE: {
+    "gpt-oss-120b:free": openrouter("openai/gpt-oss-20b:free"),
+    "qwen3-coder:free": openrouter("qwen/qwen3-coder:free"),
+    "deepseek-v3:free": openrouter("deepseek/deepseek-r1-0528:free"),
+    "gemini-2.0-flash-exp:free": openrouter("google/gemini-2.0-flash-exp:free"),
+  },
   openai: {
-    "gpt-4.1": openai("gpt-4.1"),
-    "gpt-4.1-mini": openai("gpt-4.1-mini"),
-    "o4-mini": openai("o4-mini"),
-    o3: openai("o3"),
-    "gpt-5-chat": openai("gpt-5-chat-latest"),
     "gpt-5": openai("gpt-5"),
     "gpt-5-mini": openai("gpt-5-mini"),
     "gpt-5-codex": openai("gpt-5-codex"),
-    "gpt-5-nano": openai("gpt-5-nano"),
   },
   google: {
     "gemini-2.5-flash-lite": google("gemini-2.5-flash-lite"),
@@ -69,15 +76,7 @@ const staticModels = {
     "gpt-oss-120b": groq("openai/gpt-oss-120b"),
     "qwen3-32b": groq("qwen/qwen3-32b"),
   },
-  openRouter: {
-    "gpt-oss-20b:free": openrouter("openai/gpt-oss-20b:free"),
-    "qwen3-8b:free": openrouter("qwen/qwen3-8b:free"),
-    "qwen3-14b:free": openrouter("qwen/qwen3-14b:free"),
-    "qwen3-coder:free": openrouter("qwen/qwen3-coder:free"),
-    "deepseek-r1:free": openrouter("deepseek/deepseek-r1-0528:free"),
-    "deepseek-v3:free": openrouter("deepseek/deepseek-chat-v3-0324:free"),
-    "gemini-2.0-flash-exp:free": openrouter("google/gemini-2.0-flash-exp:free"),
-  },
+
 };
 
 const staticUnsupportedModels = new Set([
