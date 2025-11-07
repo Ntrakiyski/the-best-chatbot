@@ -53,27 +53,27 @@ const staticModels = {
     "gpt-5-mini": openai("gpt-5-mini"),
     "gpt-5-codex": openai("gpt-5-codex"),
   },
-  google: {
-    "gemini-2.5-flash-lite": google("gemini-2.5-flash-lite"),
-    "gemini-2.5-flash": google("gemini-2.5-flash"),
-    "gemini-2.5-pro": google("gemini-2.5-pro"),
-  },
-  anthropic: {
-    "sonnet-4.5": anthropic("claude-sonnet-4-5"),
-    "haiku-4.5": anthropic("claude-haiku-4-5"),
-    "opus-4.1": anthropic("claude-opus-4-1"),
-  },
-  xai: {
-    "grok-4-fast": xai("grok-4-fast-non-reasoning"),
-    "grok-4": xai("grok-4"),
-    "grok-3": xai("grok-3"),
-    "grok-3-mini": xai("grok-3-mini"),
-  },
-  ollama: {
-    "gemma3:1b": ollama("gemma3:1b"),
-    "gemma3:4b": ollama("gemma3:4b"),
-    "gemma3:12b": ollama("gemma3:12b"),
-  },
+  // google: {
+  //   "gemini-2.5-flash-lite": google("gemini-2.5-flash-lite"),
+  //   "gemini-2.5-flash": google("gemini-2.5-flash"),
+  //   "gemini-2.5-pro": google("gemini-2.5-pro"),
+  // },
+  // anthropic: {
+  //   "sonnet-4.5": anthropic("claude-sonnet-4-5"),
+  //   "haiku-4.5": anthropic("claude-haiku-4-5"),
+  //   "opus-4.1": anthropic("claude-opus-4-1"),
+  // },
+  // xai: {
+  //   "grok-4-fast": xai("grok-4-fast-non-reasoning"),
+  //   "grok-4": xai("grok-4"),
+  //   "grok-3": xai("grok-3"),
+  //   "grok-3-mini": xai("grok-3-mini"),
+  // },
+  // ollama: {
+  //   "gemma3:1b": ollama("gemma3:1b"),
+  //   "gemma3:4b": ollama("gemma3:4b"),
+  //   "gemma3:12b": ollama("gemma3:12b"),
+  // },
   groq: {
     "kimi-k2-instruct": groq("moonshotai/kimi-k2-instruct"),
     "llama-4-scout-17b": groq("meta-llama/llama-4-scout-17b-16e-instruct"),
