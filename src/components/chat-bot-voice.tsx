@@ -76,6 +76,7 @@ export function ChatBotVoice() {
     model,
     allowedMcpServers,
     mcpList,
+    currentThreadId,
   ] = appStore(
     useShallow((state) => [
       state.voiceChat.agentId,
@@ -84,6 +85,7 @@ export function ChatBotVoice() {
       state.chatModel,
       state.allowedMcpServers,
       state.mcpList,
+      state.currentThreadId,
     ]),
   );
 
@@ -137,6 +139,7 @@ export function ChatBotVoice() {
   } = OpenAIVoiceChat({
     toolMentions,
     agentId,
+    threadId: currentThreadId || undefined,
     ...voiceChat.options.providerOptions,
   });
 

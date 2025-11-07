@@ -19,6 +19,116 @@ import { extractMCPToolId } from "lib/ai/mcp/mcp-tool-id";
 import { callMcpToolByServerNameAction } from "@/app/api/mcp/actions";
 import { appStore } from "@/app/store";
 
+/**
+ * Persists a voice message to the database
+ */
+async function persistVoiceMessage(
+  threadId: string | undefined,
+  role: "user" | "assistant",
+  content: string,
+  parts?: any[],
+  metadata?: {
+    voiceModel?: string;
+    voiceVoice?: string;
+    voiceLanguage?: string;
+    transcriptionConfidence?: number;
+  },
+) {
+  if (!threadId) {
+    console.warn("No threadId provided, skipping voice message persistence");
+    return;
+  }
+
+  try {
+    const response = await fetch("/api/chat/voice-message", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        threadId,
+        role,
+        content,
+        parts,
+        metadata: {
+          modality: "voice",
+          ...metadata,
+        },
+      }),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      console.error("Failed to persist voice message:", error);
+    }
+  } catch (error) {
+    console.error("Error persisting voice message:", error);
+  }
+}
+
+/**
+ * Loads thread history and injects it into the Realtime session
+ */
+async function injectThreadHistory(
+  threadId: string | undefined,
+  dataChannel: RTCDataChannel | null,
+  limit: number = 20,
+) {
+  if (!threadId || !dataChannel) {
+    console.warn("Cannot inject history: missing threadId or dataChannel");
+    return;
+  }
+
+  try {
+    const response = await fetch(
+      `/api/thread/${threadId}/messages?limit=${limit}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      },
+    );
+
+    if (!response.ok) {
+      console.error("Failed to load thread history");
+      return;
+    }
+
+    const data = await response.json();
+    const messages = data.messages || [];
+
+    console.log(`Injecting ${messages.length} messages into voice session`);
+
+    // Inject each message as a conversation item
+    for (const msg of messages) {
+      // Extract text content from parts
+      const textPart = msg.parts.find((p: any) => p.type === "text");
+      if (!textPart) continue;
+
+      const event = {
+        type: "conversation.item.create",
+        item: {
+          type: "message",
+          role: msg.role,
+          content: [
+            {
+              type: "input_text",
+              text: textPart.text,
+            },
+          ],
+        },
+      };
+
+      dataChannel.send(JSON.stringify(event));
+    }
+
+    console.log("Thread history injection complete");
+  } catch (error) {
+    console.error("Error injecting thread history:", error);
+  }
+}
+
 export const OPENAI_VOICE = {
   Alloy: "alloy",
   Ballad: "ballad",
@@ -77,8 +187,11 @@ const createUIMessage = (m: {
 };
 
 export function useOpenAIVoiceChat(props?: VoiceChatOptions): VoiceChatSession {
-  const { model = "gpt-4o-realtime-preview", voice = OPENAI_VOICE.Ash } =
-    props || {};
+  const {
+    model = "gpt-4o-realtime-preview",
+    voice = OPENAI_VOICE.Ash,
+    threadId,
+  } = props || {};
 
   const [isUserSpeaking, setIsUserSpeaking] = useState(false);
   const [isAssistantSpeaking, setIsAssistantSpeaking] = useState(false);
@@ -284,15 +397,29 @@ export function useOpenAIVoiceChat(props?: VoiceChatOptions): VoiceChatSession {
           break;
         }
         case "conversation.item.input_audio_transcription.completed": {
+          const transcript = event.transcript || "...speaking";
           updateUIMessage(event.item_id, {
             parts: [
               {
                 type: "text",
-                text: event.transcript || "...speaking",
+                text: transcript,
               },
             ],
             completed: true,
           });
+
+          // Persist user voice message to database
+          persistVoiceMessage(
+            threadId,
+            "user",
+            transcript,
+            [{ type: "text", text: transcript }],
+            {
+              voiceModel: model,
+              voiceVoice: voice,
+              voiceLanguage: "en", // TODO: detect language
+            },
+          );
           break;
         }
         case "response.audio_transcript.delta": {
@@ -331,15 +458,28 @@ export function useOpenAIVoiceChat(props?: VoiceChatOptions): VoiceChatSession {
           break;
         }
         case "response.audio_transcript.done": {
+          const assistantTranscript = event.transcript || "";
           updateUIMessage(event.item_id, (prev) => {
             const textPart = prev.parts.find((p) => p.type == "text");
             if (!textPart) return prev;
-            (textPart as TextPart).text = event.transcript || "";
+            (textPart as TextPart).text = assistantTranscript;
             return {
               ...prev,
               completed: true,
             };
           });
+
+          // Persist assistant voice message to database
+          persistVoiceMessage(
+            threadId,
+            "assistant",
+            assistantTranscript,
+            [{ type: "text", text: assistantTranscript }],
+            {
+              voiceModel: model,
+              voiceVoice: voice,
+            },
+          );
           break;
         }
         case "response.function_call_arguments.done": {
@@ -420,10 +560,13 @@ export function useOpenAIVoiceChat(props?: VoiceChatOptions): VoiceChatSession {
           });
         }
       });
-      dc.addEventListener("open", () => {
+      dc.addEventListener("open", async () => {
         setIsActive(true);
         setIsListening(true);
         setIsLoading(false);
+
+        // Inject thread history into voice session
+        await injectThreadHistory(threadId, dc, 20);
       });
       dc.addEventListener("close", () => {
         setIsActive(false);
