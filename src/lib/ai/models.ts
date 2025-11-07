@@ -37,6 +37,11 @@ const staticModels = {
     "minimax-m2-0.60": openrouter("minimax/minimax-m2"),
     "qwen3-coder-1": openrouter("qwen/qwen3-coder"),
   },
+   openRouterVisual: {
+    "qwen3-vl-1": openrouter("qwen/qwen3-vl-235b-a22b-instruct"),
+    "glm-4.5v-2.40": openrouter("z-ai/glm-4.5v"),
+    "gemini-2.5-pro-11.25": openrouter("google/gemini-2.5-pro"),
+  },
   openRouterFREE: {
     "gpt-oss-120b:free": openrouter("openai/gpt-oss-20b:free"),
     "qwen3-coder:free": openrouter("qwen/qwen3-coder:free"),
