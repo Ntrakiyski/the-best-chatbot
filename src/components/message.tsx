@@ -14,10 +14,16 @@ import {
   FileMessagePart,
   SourceUrlMessagePart,
 } from "./message-parts";
-import { ChevronDown, ChevronUp, TriangleAlertIcon } from "lucide-react";
+import {
+  ChevronDown,
+  ChevronUp,
+  TriangleAlertIcon,
+  MicIcon,
+} from "lucide-react";
 import { Button } from "ui/button";
 import { useTranslations } from "next-intl";
 import { ChatMetadata } from "app-types/chat";
+import { Tooltip, TooltipContent, TooltipTrigger } from "ui/tooltip";
 
 interface Props {
   message: UIMessage;
@@ -62,6 +68,9 @@ const PurePreviewMessage = ({
   }
   if (!partsForDisplay.length) return null;
 
+  const metadata = message.metadata as ChatMetadata | undefined;
+  const isVoiceMessage = metadata?.modality === "voice";
+
   return (
     <div className="w-full mx-auto max-w-3xl px-6 group/message">
       <div
@@ -71,6 +80,21 @@ const PurePreviewMessage = ({
         )}
       >
         <div className="flex flex-col gap-4 w-full">
+          {isVoiceMessage && (
+            <div className="flex items-center gap-1.5 text-xs text-muted-foreground mb-1">
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div className="flex items-center gap-1">
+                    <MicIcon className="size-3" />
+                    <span>Voice message</span>
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>This message was sent via voice chat</p>
+                </TooltipContent>
+              </Tooltip>
+            </div>
+          )}
           {partsForDisplay.map((part, index) => {
             const key = `message-${messageIndex}-part-${part.type}-${index}`;
             const isLastPart = index === partsForDisplay.length - 1;

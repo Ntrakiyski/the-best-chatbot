@@ -22,6 +22,7 @@ export type VoiceChatOptions = {
   agentId?: string;
   model?: string;
   voice?: string;
+  threadId?: string; // For unified voice/text history
 };
 
 export type VoiceChatHook = (props?: {

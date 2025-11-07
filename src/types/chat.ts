@@ -10,6 +10,12 @@ export type ChatMetadata = {
   toolChoice?: "auto" | "none" | "manual";
   toolCount?: number;
   agentId?: string;
+  // Voice/Text modality tracking
+  modality?: "voice" | "text";
+  voiceModel?: string;
+  voiceVoice?: string;
+  voiceLanguage?: string;
+  transcriptionConfidence?: number;
 };
 
 export type ChatModel = {
