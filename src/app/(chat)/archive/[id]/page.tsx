@@ -108,11 +108,11 @@ export default async function ArchivePage({
           <div className="w-full h-full bg-gradient-to-r from-background to-20% to-transparent z-20" />
         </div>
       </>
-      <div className="container mx-auto p-6 max-w-4xl z-40">
+      <div className="container mx-auto p-4 md:p-6 max-w-4xl z-40">
         {/* Archive Header */}
         <div className="mb-8 z-50">
           <div className="flex items-center gap-3 mb-2">
-            <h1 className="text-2xl font-bold">{archive.name}</h1>
+            <h1 className="text-xl md:text-2xl font-bold">{archive.name}</h1>
             <div className="flex-1" />
             <p className="text-xs text-muted-foreground mr-2">
               Created {formatTimeAgo(archive.createdAt)}

@@ -209,7 +209,7 @@ export default function MCPEditor({
                 value={jsonString}
                 onChange={(e) => handleConfigChange(e.target.value)}
                 data-testid="mcp-config-editor"
-                className="font-mono h-[40vh] resize-none overflow-y-auto"
+                className="font-mono h-[40vh] resize-none overflow-y-auto whitespace-pre-wrap break-words"
                 placeholder={STDIO_ARGS_ENV_PLACEHOLDER}
               />
             </div>
