@@ -22,7 +22,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "best-chat",
   description:
-    "Better Chatbot is a chatbot that uses the Tools to answer questions.",
+    "Best Chatbot is a chatbot that uses the Tools to answer questions.",
   themeColor: "#0f172a",
   manifest: "/manifest.webmanifest",
 };
