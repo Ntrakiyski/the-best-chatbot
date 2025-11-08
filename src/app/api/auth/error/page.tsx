@@ -27,7 +27,7 @@ export default async function ErrorPage({
   const { error } = await searchParams;
 
   return (
-    <div className="w-full h-screen flex items-center justify-center relative">
+    <div className="w-full min-h-svh flex items-center justify-center relative">
       <div className="absolute inset-0 w-full h-full">
         <LightRays />
       </div>

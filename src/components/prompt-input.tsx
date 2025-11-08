@@ -474,7 +474,7 @@ export default function PromptInput({
                       </div>
                       <Button
                         variant={"ghost"}
-                        size={"icon"}
+                        size={"icon-mobile"}
                         disabled={!threadId}
                         className="rounded-full hover:bg-input! flex-shrink-0"
                         onClick={() => {
@@ -501,7 +501,7 @@ export default function PromptInput({
                   onFocus={onFocus}
                 />
               </div>
-              <div className="flex w-full items-center z-30">
+              <div className="flex flex-wrap md:flex-nowrap w-full items-center gap-1 z-30">
                 <input
                   ref={fileInputRef}
                   type="file"
@@ -519,8 +519,8 @@ export default function PromptInput({
                   <DropdownMenuTrigger asChild>
                     <Button
                       variant={"ghost"}
-                      size={"sm"}
-                      className="rounded-full hover:bg-input! p-2! data-[state=open]:bg-input!"
+                      size={"icon-mobile"}
+                      className="rounded-full hover:bg-input! data-[state=open]:bg-input!"
                       disabled={!threadId}
                     >
                       <PlusIcon />
@@ -633,7 +633,7 @@ export default function PromptInput({
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <Button
-                        size={"sm"}
+                        size={"icon-mobile"}
                         onClick={() => {
                           appStoreMutate((state) => ({
                             voiceChat: {
@@ -643,7 +643,7 @@ export default function PromptInput({
                             },
                           }));
                         }}
-                        className="rounded-full p-2!"
+                        className="rounded-full"
                       >
                         <AudioWaveformIcon size={16} />
                       </Button>
@@ -659,7 +659,7 @@ export default function PromptInput({
                         submit();
                       }
                     }}
-                    className="fade-in animate-in cursor-pointer text-muted-foreground rounded-full p-2 bg-secondary hover:bg-accent-foreground hover:text-accent transition-all duration-200"
+                    className="fade-in animate-in cursor-pointer text-muted-foreground rounded-full p-2 md:p-2 p-2.5 bg-secondary hover:bg-accent-foreground hover:text-accent transition-all duration-200"
                   >
                     {isLoading ? (
                       <Square

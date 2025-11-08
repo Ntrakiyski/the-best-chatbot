@@ -471,15 +471,15 @@ export default function ChatBot({ threadId, initialMessages }: Props) {
               )}
 
               {error && <ErrorMessage error={error} />}
-              <div className="min-w-0 min-h-52" />
+              <div className="min-w-0 min-h-8 md:min-h-52" />
             </div>
           </>
         )}
 
         <div
           className={clsx(
-            messages.length && "absolute bottom-14",
-            "w-full z-10",
+            messages.length && "md:absolute md:bottom-14",
+            "w-full z-10 pb-safe",
           )}
         >
           <div className="max-w-3xl mx-auto relative flex justify-center items-center -top-2">
