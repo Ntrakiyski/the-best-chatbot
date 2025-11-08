@@ -1,5 +1,8 @@
 import { customModelProvider } from "lib/ai/models";
-import { getOllamaModels } from "lib/ai/ollama";
+import {
+  getOllamaModels,
+  doesOllamaModelSupportTools,
+} from "lib/ai/ollama";
 
 export const GET = async () => {
   const providers = [...customModelProvider.modelsInfo];
@@ -14,7 +17,7 @@ export const GET = async () => {
         hasAPIKey: true,
         models: ollamaModelNames.map((name) => ({
           name,
-          isToolCallUnsupported: false, // Ollama supports tool calling
+          isToolCallUnsupported: !doesOllamaModelSupportTools(name), // Smart detection based on model name
           isImageInputUnsupported: true, // Conservative: assume no vision by default
           supportedFileMimeTypes: [],
         })),
