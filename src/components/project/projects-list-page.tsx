@@ -56,9 +56,9 @@ export default function ProjectsListPage() {
   );
 
   return (
-    <div className="w-full flex flex-col gap-4 p-8">
+    <div className="w-full flex flex-col gap-4 p-4 md:p-8">
       <div className="flex flex-row gap-2 items-center">
-        <h1 className="text-2xl font-bold">
+        <h1 className="text-xl md:text-2xl font-bold">
           {t("Projects.myProjects") || "My Projects"}
         </h1>
       </div>
@@ -135,7 +135,7 @@ function ProjectsGrid({
         {showCreate && (
           <CreateProjectModal>
             <Card
-              className="relative bg-secondary overflow-hidden w-full hover:bg-input transition-colors h-[196px] cursor-pointer"
+              className="relative bg-secondary overflow-hidden w-full hover:bg-input transition-colors min-h-[196px] cursor-pointer"
               data-testid="create-project-card"
             >
               <div className="absolute inset-0 w-full h-full opacity-50">

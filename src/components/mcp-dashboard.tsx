@@ -124,9 +124,9 @@ export default function MCPDashboard({ message, user }: MCPDashboardProps) {
     <>
       {particle}
       <ScrollArea className="h-full w-full z-40 ">
-        <div className="pt-8 flex-1 relative flex flex-col gap-4 px-8 max-w-3xl h-full mx-auto pb-8">
+        <div className="pt-8 flex-1 relative flex flex-col gap-4 px-4 md:px-8 max-w-3xl h-full mx-auto pb-8">
           <div className={cn("flex items-center  pb-8")}>
-            <h1 className="text-2xl font-bold flex items-center gap-2">
+            <h1 className="text-xl md:text-2xl font-bold flex items-center gap-2">
               {canCreate ? t("mcpServers") : t("availableMcpServers")}
               {showValidating && isValidating && !isLoading && (
                 <Loader2 className="size-4 animate-spin" />
