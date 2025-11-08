@@ -139,6 +139,7 @@
     "@types/pg": "^8.15.6",
     "@types/react": "^19.2.2",
     "@types/react-dom": "^19.2.2",
+    "@vitest/coverage-v8": "^3.2.4",
     "cross-env": "^7.0.3",
     "dotenv-cli": "^10.0.0",
     "drizzle-kit": "^0.30.6",
@@ -154,10 +155,7 @@
     "vitest": "^3.2.4"
   },
   "lint-staged": {
-    "*.{js,json,mjs,ts,yaml,tsx,css}": [
-      "pnpm format",
-      "pnpm lint:fix"
-    ]
+    "*.{js,json,mjs,ts,yaml,tsx,css}": ["pnpm format", "pnpm lint:fix"]
   },
   "packageManager": "pnpm@10.2.1",
   "engines": {
