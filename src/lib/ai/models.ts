@@ -92,6 +92,16 @@ const staticUnsupportedModels = new Set([
 
 const staticSupportImageInputModels = {
   ...staticModels.openai,
+  ...staticModels.openRouterVisual, // OpenRouter Vision models support image input
+  ...{
+    // Individual OpenRouter models with vision capabilities
+    "gemini-quick-0.50": staticModels.openRouter["gemini-quick-0.50"],
+  },
+  ...{
+    // OpenRouter FREE models with vision capabilities
+    "gemini-2.0-flash-exp:free":
+      staticModels.openRouterFREE["gemini-2.0-flash-exp:free"],
+  },
   // Add other providers that support image input here when uncommented
 };
 
