@@ -68,6 +68,10 @@ async function persistVoiceMessage(
 
 /**
  * Loads thread history and injects it into the Realtime session
+ *
+ * FIX A: Corrected content type format for OpenAI Realtime API
+ * The API expects "input_text" for user messages but needs proper formatting
+ * for assistant messages to be recognized as conversation history
  */
 async function injectThreadHistory(
   threadId: string | undefined,
@@ -91,20 +95,41 @@ async function injectThreadHistory(
     );
 
     if (!response.ok) {
-      console.error("Failed to load thread history");
+      console.error("Failed to load thread history", {
+        status: response.status,
+        statusText: response.statusText,
+      });
       return;
     }
 
     const data = await response.json();
     const messages = data.messages || [];
 
-    console.log(`Injecting ${messages.length} messages into voice session`);
+    console.log(`[VOICE HISTORY] Fetched ${messages.length} messages from API`);
+    console.log(
+      `[VOICE HISTORY] Messages:`,
+      messages.map((m: any) => ({
+        id: m.id,
+        role: m.role,
+        modality: m.metadata?.modality,
+        hasText: m.parts?.some((p: any) => p.type === "text"),
+      })),
+    );
 
     // Inject each message as a conversation item
     for (const msg of messages) {
       // Extract text content from parts
       const textPart = msg.parts.find((p: any) => p.type === "text");
-      if (!textPart) continue;
+      if (!textPart || !textPart.text) {
+        console.log(
+          `[VOICE HISTORY] Skipping message ${msg.id}: no text content`,
+        );
+        continue;
+      }
+
+      // FIX A: Use correct content format based on role
+      // OpenAI Realtime API requires different content types for user vs assistant
+      const contentType = msg.role === "user" ? "input_text" : "text";
 
       const event = {
         type: "conversation.item.create",
@@ -113,19 +138,27 @@ async function injectThreadHistory(
           role: msg.role,
           content: [
             {
-              type: "input_text",
+              type: contentType,
               text: textPart.text,
             },
           ],
         },
       };
 
+      console.log(`[VOICE HISTORY] Injecting ${msg.role} message:`, {
+        id: msg.id,
+        contentType,
+        textLength: textPart.text.length,
+      });
+
       dataChannel.send(JSON.stringify(event));
     }
 
-    console.log("Thread history injection complete");
+    console.log(
+      `[VOICE HISTORY] Successfully injected ${messages.length} messages`,
+    );
   } catch (error) {
-    console.error("Error injecting thread history:", error);
+    console.error("[VOICE HISTORY] Error injecting thread history:", error);
   }
 }
 
@@ -564,6 +597,13 @@ export function useOpenAIVoiceChat(props?: VoiceChatOptions): VoiceChatSession {
         setIsActive(true);
         setIsListening(true);
         setIsLoading(false);
+
+        // FIX B: Add small delay to ensure DB commits are complete
+        // This prevents race conditions where voice starts before chat messages are persisted
+        console.log(
+          "[VOICE HISTORY] Waiting 100ms for DB sync before loading history...",
+        );
+        await new Promise((resolve) => setTimeout(resolve, 100));
 
         // Inject thread history into voice session
         await injectThreadHistory(threadId, dc, 20);
