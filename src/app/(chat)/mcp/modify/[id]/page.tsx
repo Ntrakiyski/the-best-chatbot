@@ -18,7 +18,7 @@ export default async function Page({
   }
 
   return (
-    <div className="container max-w-3xl mx-4 md:mx-auto py-8">
+    <div className="container max-w-3xl mx-4 md:mx-auto py-4 md:py-8">
       <div className="flex flex-col gap-2">
         <Link
           href="/mcp"
@@ -28,7 +28,7 @@ export default async function Page({
           {t("Common.back")}
         </Link>
         <header>
-          <h2 className="text-3xl font-semibold my-2">
+          <h2 className="text-2xl md:text-3xl font-semibold my-2">
             {t("MCP.mcpConfiguration")}
           </h2>
           <p className="text text-muted-foreground">
