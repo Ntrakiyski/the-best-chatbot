@@ -478,7 +478,7 @@ export default function ChatBot({ threadId, initialMessages }: Props) {
 
         <div
           className={clsx(
-            messages.length && "absolute bottom-4 md:bottom-14",
+            messages.length && "absolute bottom-6 md:bottom-16",
             "w-full z-30 pb-safe",
           )}
         >

@@ -265,7 +265,7 @@ export default function ProjectDetailPage({
 
   if (isLoading) {
     return (
-      <div className="w-full flex flex-col gap-4 p-8">
+      <div className="w-full flex flex-col gap-4 p-4 md:p-8">
         <Skeleton className="h-8 w-48" />
         <Skeleton className="h-48 w-full" />
         <Skeleton className="h-64 w-full" />
@@ -275,7 +275,7 @@ export default function ProjectDetailPage({
 
   if (error || !project) {
     return (
-      <div className="w-full flex flex-col gap-4 p-8">
+      <div className="w-full flex flex-col gap-4 p-4 md:p-8">
         <Button
           variant="ghost"
           onClick={() => router.push("/projects")}
@@ -301,7 +301,7 @@ export default function ProjectDetailPage({
   const isArchived = project.isArchived;
 
   return (
-    <div className="w-full flex flex-col gap-6 p-8">
+    <div className="w-full flex flex-col gap-6 p-4 md:p-8">
       {/* Header with Back Button */}
       <div className="flex items-center gap-4">
         <Button
