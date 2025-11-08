@@ -158,8 +158,8 @@ export default function WorkflowListPage({
     : [...myWorkflows, ...sharedWorkflows];
 
   return (
-    <div className="w-full flex flex-col gap-4 p-8">
-      <div className="flex flex-row gap-2 items-center">
+    <div className="w-full flex flex-col gap-4 p-4 md:p-8">
+      <div className="flex flex-col sm:flex-row gap-2 items-center">
         <Dialog>
           <DialogTrigger asChild>
             <Button variant={"ghost"} className="relative group">
@@ -169,7 +169,7 @@ export default function WorkflowListPage({
               </div>
             </Button>
           </DialogTrigger>
-          <DialogContent className="md:max-w-3xl!">
+          <DialogContent className="w-full max-w-[calc(100vw-2rem)] md:max-w-3xl">
             <DialogTitle className="sr-only">workflow greeting</DialogTitle>
             <WorkflowGreeting />
           </DialogContent>
@@ -214,7 +214,7 @@ export default function WorkflowListPage({
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {canCreate && (
               <EditWorkflowPopup>
-                <Card className="relative bg-secondary overflow-hidden w-full hover:bg-input transition-colors h-[196px] cursor-pointer">
+                <Card className="relative bg-secondary overflow-hidden w-full hover:bg-input transition-colors min-h-[196px] cursor-pointer">
                   <div className="absolute inset-0 w-full h-full opacity-50">
                     <BackgroundPaths />
                   </div>
