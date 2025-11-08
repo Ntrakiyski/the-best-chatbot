@@ -1,6 +1,6 @@
 import "server-only";
 
-// import { createOllama } from "ollama-ai-provider-v2"; // Commented out - unused (see line 24-26)
+import { createOllama } from "ollama-ai-provider-v2";
 import { openai } from "@ai-sdk/openai";
 // import { google } from "@ai-sdk/google"; // Commented out - unused (see line 56-60)
 // import { anthropic } from "@ai-sdk/anthropic"; // Commented out - unused (see line 61-65)
@@ -21,9 +21,9 @@ import {
   // XAI_FILE_MIME_TYPES, // Commented out - unused
 } from "./file-support";
 
-// const ollama = createOllama({ // Commented out - unused (see line 72-76)
-//   baseURL: process.env.OLLAMA_BASE_URL || "http://localhost:11434/api",
-// });
+const ollama = createOllama({
+  baseURL: process.env.OLLAMA_BASE_URL || "http://localhost:11434/api",
+});
 const groq = createGroq({
   baseURL: process.env.GROQ_BASE_URL || "https://api.groq.com/openai/v1",
   apiKey: process.env.GROQ_API_KEY,
@@ -192,6 +192,12 @@ export const customModelProvider = {
   })),
   getModel: (model?: ChatModel): LanguageModel => {
     if (!model) return fallbackModel;
+
+    // Handle Ollama provider dynamically
+    if (model.provider === "ollama") {
+      return ollama(model.model);
+    }
+
     return allModels[model.provider]?.[model.model] || fallbackModel;
   },
 };
