@@ -103,7 +103,7 @@ const initialState: AppState = {
     options: {
       provider: "openai",
       providerOptions: {
-        model: OPENAI_VOICE["Alloy"],
+        voice: OPENAI_VOICE["Alloy"], // Fixed: use 'voice' instead of 'model'
       },
     },
   },

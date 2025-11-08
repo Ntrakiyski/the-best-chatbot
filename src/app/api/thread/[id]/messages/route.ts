@@ -46,18 +46,48 @@ export async function GET(
     // 5. Fetch messages
     let messages = await chatRepository.selectMessagesByThreadId(threadId);
 
+    // FIX C: Add debug logging to diagnose history fetch issues
+    console.log(
+      `[MESSAGES API] Fetched ${messages.length} total messages for thread ${threadId}`,
+    );
+    console.log(
+      `[MESSAGES API] Query params - modality: ${modality}, limit: ${limit}`,
+    );
+
+    if (messages.length > 0) {
+      console.log(
+        `[MESSAGES API] Sample messages:`,
+        messages.slice(0, 3).map((msg) => ({
+          id: msg.id,
+          role: msg.role,
+          modality: (msg.metadata as any)?.modality,
+          hasText: msg.parts?.some((p: any) => p.type === "text"),
+        })),
+      );
+    }
+
     // Filter by modality if specified
     if (modality) {
       messages = messages.filter((msg) => {
         const metadata = msg.metadata as any;
         return metadata?.modality === modality;
       });
+      console.log(
+        `[MESSAGES API] After modality filter (${modality}): ${messages.length} messages`,
+      );
     }
 
     // Apply limit (take most recent N messages)
     if (limit && limit > 0) {
       messages = messages.slice(-limit);
+      console.log(
+        `[MESSAGES API] After limit (${limit}): ${messages.length} messages`,
+      );
     }
+
+    console.log(
+      `[MESSAGES API] Returning ${messages.length} messages to client`,
+    );
 
     return NextResponse.json({
       success: true,

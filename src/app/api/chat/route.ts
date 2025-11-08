@@ -266,6 +266,7 @@ export async function POST(request: Request) {
       toolChoice: toolChoice,
       toolCount: 0,
       chatModel: chatModel,
+      modality: "text", // Tag all chat messages as text modality
     };
 
     const stream = createUIMessageStream({
@@ -490,12 +491,15 @@ export async function POST(request: Request) {
             metadata,
           });
         } else {
+          // Save user message with text modality metadata
           await chatRepository.upsertMessage({
             threadId: thread!.id,
             role: message.role,
             parts: message.parts.map(convertToSavePart),
             id: message.id,
+            metadata: { modality: "text" }, // Ensure user message has modality tag
           });
+          // Save assistant message with full metadata
           await chatRepository.upsertMessage({
             threadId: thread!.id,
             role: responseMessage.role,
