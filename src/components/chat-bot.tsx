@@ -432,7 +432,7 @@ export default function ChatBot({ threadId, initialMessages }: Props) {
             <div
               className={cn(
                 "flex flex-col gap-2 overflow-y-auto py-6 z-10",
-                hasStartedChat && "pb-32",
+                hasStartedChat && "pb-44",
               )}
               ref={containerRef}
               onScroll={handleScroll}
@@ -483,7 +483,7 @@ export default function ChatBot({ threadId, initialMessages }: Props) {
         <div
           className={
             hasStartedChat
-              ? "fixed bottom-0 left-0 right-0 z-30 pb-safe flex justify-center"
+              ? "fixed bottom-0 left-0 right-0 z-30 pb-safe"
               : "w-full z-30 pb-safe"
           }
         >
@@ -494,15 +494,19 @@ export default function ChatBot({ threadId, initialMessages }: Props) {
             />
           </div>
 
-          <PromptInput
-            input={input}
-            threadId={threadId}
-            sendMessage={sendMessage}
-            setInput={setInput}
-            isLoading={isLoading || isPendingToolCall}
-            onStop={stop}
-            onFocus={isFirstTime ? undefined : handleFocus}
-          />
+          <div
+            className={hasStartedChat ? "w-full max-w-3xl mx-auto px-6" : ""}
+          >
+            <PromptInput
+              input={input}
+              threadId={threadId}
+              sendMessage={sendMessage}
+              setInput={setInput}
+              isLoading={isLoading || isPendingToolCall}
+              onStop={stop}
+              onFocus={isFirstTime ? undefined : handleFocus}
+            />
+          </div>
         </div>
         <DeleteThreadPopup
           threadId={threadId}
