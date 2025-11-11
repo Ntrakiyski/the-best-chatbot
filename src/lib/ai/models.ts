@@ -76,13 +76,17 @@ const staticModels = {
   //   "gemma3:4b": ollama("gemma3:4b"),
   //   "gemma3:12b": ollama("gemma3:12b"),
   // },
-  groq: {
-    "kimi-k2-instruct": groq("moonshotai/kimi-k2-instruct"),
-    "llama-4-scout-17b": groq("meta-llama/llama-4-scout-17b-16e-instruct"),
-    "gpt-oss-20b": groq("openai/gpt-oss-20b"),
-    "gpt-oss-120b": groq("openai/gpt-oss-120b"),
-    "qwen3-32b": groq("qwen/qwen3-32b"),
-  },
+ groq: {
+    "llama-3.1-8b-0.06": groq("meta-llama/llama-3.1-8b-instant"),
+    "llama-3.3-70b-0.65": groq("meta-llama/llama-3.3-70b-versatile"),
+    "gpt-20b-0.13": groq("openai/gpt-oss-20b"),
+    "gpt-120b-0.27": groq("openai/gpt-oss-120b"),
+    "llama-4-17b-0.17": groq("meta-llama/llama-4-scout-17b-16e-instruct"),
+    "qwen3-32b-0.37": groq("qwen/qwen3-32b"),
+    "gpt-safeguard-20b-0.13": groq("openai/gpt-oss-safeguard-20b"),
+    "llama-guard-4-12b-0.20": groq("meta-llama/llama-guard-4-12b"),
+    "deepseek-r1-distill-llama-70b-0.82": groq("deepseek-ai/deepseek-r1-distill-llama-70b"),
+},
 };
 
 const staticUnsupportedModels = new Set([
