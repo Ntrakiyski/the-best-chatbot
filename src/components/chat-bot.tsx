@@ -4,7 +4,6 @@ import { useChat } from "@ai-sdk/react";
 import { toast } from "sonner";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import PromptInput from "./prompt-input";
-import clsx from "clsx";
 import { appStore } from "@/app/store";
 import { cn, createDebounce, generateUUID, truncateString } from "lib/utils";
 import { ErrorMessage, PreviewMessage } from "./message";
@@ -433,7 +432,7 @@ export default function ChatBot({ threadId, initialMessages }: Props) {
             <div
               className={cn(
                 "flex flex-col gap-2 overflow-y-auto py-6 z-10",
-                hasStartedChat && "pb-32"
+                hasStartedChat && "pb-32",
               )}
               ref={containerRef}
               onScroll={handleScroll}
