@@ -483,20 +483,18 @@ export default function ChatBot({ threadId, initialMessages }: Props) {
         <div
           className={
             hasStartedChat
-              ? "fixed bottom-0 left-0 right-0 z-30 pb-safe"
+              ? "fixed bottom-6 md:bottom-16 left-0 right-0 z-30 pb-safe flex justify-center"
               : "w-full z-30 pb-safe"
           }
         >
-          <div className="max-w-3xl mx-auto relative flex justify-center items-center -top-2">
-            <ScrollToBottomButton
-              show={!isAtBottom && messages.length > 0}
-              onClick={scrollToBottom}
-            />
-          </div>
+          <div className="w-full max-w-3xl mx-auto px-6">
+            <div className="relative flex justify-center items-center -top-2 mb-2">
+              <ScrollToBottomButton
+                show={!isAtBottom && messages.length > 0}
+                onClick={scrollToBottom}
+              />
+            </div>
 
-          <div
-            className={hasStartedChat ? "w-full max-w-3xl mx-auto px-6" : ""}
-          >
             <PromptInput
               input={input}
               threadId={threadId}
