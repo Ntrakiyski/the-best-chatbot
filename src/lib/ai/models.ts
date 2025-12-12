@@ -35,9 +35,10 @@ const staticModels = {
     "gemini-quick-0.50": openrouter(
       "google/gemini-2.5-flash-lite-preview-09-2025",
     ),
-    "grok-4-fast-0.70": openrouter("x-ai/grok-4-fast"),
+    "grok-4.1-fast": openrouter("x-ai/grok-4.1-fast"),
     "minimax-m2-0.60": openrouter("minimax/minimax-m2"),
     "qwen3-coder-1": openrouter("qwen/qwen3-coder"),
+    "aion-1-mini": openrouter("aion-labs/aion-1.0-mini"),
   },
   openRouterVisual: {
     "qwen3-vl-1": openrouter("qwen/qwen3-vl-235b-a22b-instruct"),
@@ -45,6 +46,14 @@ const staticModels = {
     "gemini-2.5-pro-11.25": openrouter("google/gemini-2.5-pro"),
   },
   openRouterFREE: {
+    "html-model:free": openrouter("nex-agi/deepseek-v3.1-nex-n1:free"),
+    "tng-r1t-chimera:free": openrouter("tngtech/tng-r1t-chimera:free"),
+    "kat-coder-pro:free": openrouter("kwaipilot/kat-coder-pro:free"),
+    "devstral-2512:free": openrouter("mistralai/devstral-2512:free"),
+    "trinity-mini:free": openrouter("arcee-ai/trinity-mini:free"),
+    "tongyi-deepresearch-30b:free": openrouter("alibaba/tongyi-deepresearch-30b-a3b:free"),
+    "olmo-3-32b-think:free": openrouter("allenai/olmo-3-32b-think:free"),
+    "dolphin-mistral-24b:free": openrouter("cognitivecomputations/dolphin-mistral-24b-venice-edition:free"),
     "gpt-oss-120b:free": openrouter("openai/gpt-oss-20b:free"),
     "qwen3-coder:free": openrouter("qwen/qwen3-coder:free"),
     "deepseek-v3:free": openrouter("deepseek/deepseek-r1-0528:free"),
