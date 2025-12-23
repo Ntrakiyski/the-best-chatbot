@@ -61,6 +61,7 @@ export const openRouterModelIdMapping: Record<string, string> = {
 
 const staticModels = {
   openRouter: {
+    // Standard OpenRouter models
     "gpt-120b-0.44": openrouter("openai/gpt-oss-120b"),
     "gemini-quick-0.50": openrouter(
       "google/gemini-2.5-flash-lite-preview-09-2025",
@@ -69,13 +70,11 @@ const staticModels = {
     "minimax-m2-0.60": openrouter("minimax/minimax-m2"),
     "qwen3-coder-1": openrouter("qwen/qwen3-coder"),
     "aion-1-mini": openrouter("aion-labs/aion-1.0-mini"),
-  },
-  openRouterVisual: {
+    // Vision models (previously openRouterVisual)
     "qwen3-vl-1": openrouter("qwen/qwen3-vl-235b-a22b-instruct"),
     "glm-4.5v-2.40": openrouter("z-ai/glm-4.5v"),
     "gemini-2.5-pro-11.25": openrouter("google/gemini-2.5-pro"),
-  },
-  openRouterFREE: {
+    // Free models (previously openRouterFREE)
     "html-model:free": openrouter("nex-agi/deepseek-v3.1-nex-n1:free"),
     "tng-r1t-chimera:free": openrouter("tngtech/tng-r1t-chimera:free"),
     "kat-coder-pro:free": openrouter("kwaipilot/kat-coder-pro:free"),
@@ -138,16 +137,13 @@ const staticUnsupportedModels = new Set([
 
 const staticSupportImageInputModels = {
   ...staticModels.openai,
-  ...staticModels.openRouterVisual, // OpenRouter Vision models support image input
-  ...{
-    // Individual OpenRouter models with vision capabilities
-    "gemini-quick-0.50": staticModels.openRouter["gemini-quick-0.50"],
-  },
-  ...{
-    // OpenRouter FREE models with vision capabilities
-    "gemini-2.0-flash-exp:free":
-      staticModels.openRouterFREE["gemini-2.0-flash-exp:free"],
-  },
+  // OpenRouter models with vision capabilities
+  "qwen3-vl-1": staticModels.openRouter["qwen3-vl-1"],
+  "glm-4.5v-2.40": staticModels.openRouter["glm-4.5v-2.40"],
+  "gemini-2.5-pro-11.25": staticModels.openRouter["gemini-2.5-pro-11.25"],
+  "gemini-quick-0.50": staticModels.openRouter["gemini-quick-0.50"],
+  "gemini-2.0-flash-exp:free":
+    staticModels.openRouter["gemini-2.0-flash-exp:free"],
   // Add other providers that support image input here when uncommented
 };
 
@@ -168,30 +164,25 @@ const registerFileSupport = (
 registerFileSupport(staticModels.openai["gpt-5"], OPENAI_FILE_MIME_TYPES);
 registerFileSupport(staticModels.openai["gpt-5-mini"], OPENAI_FILE_MIME_TYPES);
 
-// File support for OpenRouter Visual models (vision/multimodal models)
+// File support for OpenRouter models with vision capabilities
 registerFileSupport(
-  staticModels.openRouterVisual["qwen3-vl-1"],
+  staticModels.openRouter["qwen3-vl-1"],
   DEFAULT_FILE_PART_MIME_TYPES,
 );
 registerFileSupport(
-  staticModels.openRouterVisual["glm-4.5v-2.40"],
+  staticModels.openRouter["glm-4.5v-2.40"],
   DEFAULT_FILE_PART_MIME_TYPES,
 );
 registerFileSupport(
-  staticModels.openRouterVisual["gemini-2.5-pro-11.25"],
+  staticModels.openRouter["gemini-2.5-pro-11.25"],
   GEMINI_FILE_MIME_TYPES,
 );
-
-// File support for OpenRouter regular models with vision capabilities
-// Gemini models support vision/multimodal inputs
 registerFileSupport(
   staticModels.openRouter["gemini-quick-0.50"],
   GEMINI_FILE_MIME_TYPES,
 );
-
-// File support for OpenRouter free models
 registerFileSupport(
-  staticModels.openRouterFREE["gemini-2.0-flash-exp:free"],
+  staticModels.openRouter["gemini-2.0-flash-exp:free"],
   GEMINI_FILE_MIME_TYPES,
 );
 
@@ -267,8 +258,6 @@ function checkProviderAPIKey(provider: keyof typeof staticModels) {
       key = process.env.GROQ_API_KEY;
       break;
     case "openRouter":
-    case "openRouterVisual":
-    case "openRouterFREE":
       key = process.env.OPENROUTER_API_KEY;
       break;
     default:

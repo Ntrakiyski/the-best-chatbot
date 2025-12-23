@@ -20,13 +20,8 @@ export const GET = async () => {
 
   // Get all providers and filter OpenRouter models based on preferences
   const providers = customModelProvider.modelsInfo.map((provider) => {
-    // Only filter OpenRouter providers (openRouter, openRouterVisual, openRouterFREE)
-    if (
-      (provider.provider === "openRouter" ||
-        provider.provider === "openRouterVisual" ||
-        provider.provider === "openRouterFREE") &&
-      selectedOpenRouterModels
-    ) {
+    // Only filter OpenRouter provider
+    if (provider.provider === "openRouter" && selectedOpenRouterModels) {
       // Filter models based on user selection using the ID mapping
       const filteredModels = provider.models.filter((model) => {
         // Get the OpenRouter API ID for this internal model name
