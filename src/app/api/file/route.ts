@@ -1,5 +1,5 @@
 import { headers } from "next/headers";
-import { auth } from "lib/auth";
+import { auth } from "auth/server";
 import { fileRepository } from "lib/db/repository";
 import { NextRequest } from "next/server";
 
