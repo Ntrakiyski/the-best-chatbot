@@ -148,10 +148,6 @@ const getProviderDisplayName = (provider: string) => {
   switch (provider) {
     case "openRouter":
       return "OpenRouter";
-    case "openRouterVisual":
-      return "OpenRouter Vision";
-    case "openRouterFREE":
-      return "OpenRouter Free";
     case "openai":
       return "OpenAI";
     case "google":
