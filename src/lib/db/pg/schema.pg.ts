@@ -178,6 +178,25 @@ export const ProjectShareTable = pgTable(
   (table) => [unique().on(table.projectId, table.userId)],
 );
 
+export const ProjectFileTable = pgTable("project_file", {
+  id: uuid("id").primaryKey().notNull().defaultRandom(),
+  projectId: uuid("project_id")
+    .notNull()
+    .references(() => ProjectTable.id, { onDelete: "cascade" }),
+  name: varchar("name", { length: 255 }).notNull(),
+  content: text("content").notNull().default(""),
+  contentType: varchar("content_type", { length: 50 })
+    .notNull()
+    .default("markdown"),
+  size: text("size").notNull().default("0"),
+  userId: uuid("user_id")
+    .notNull()
+    .references(() => UserTable.id, { onDelete: "cascade" }),
+  isDeleted: boolean("is_deleted").notNull().default(false),
+  createdAt: timestamp("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+  updatedAt: timestamp("updated_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+});
+
 export const SessionTable = pgTable("session", {
   id: uuid("id").primaryKey().notNull().defaultRandom(),
   expiresAt: timestamp("expires_at").notNull(),
@@ -441,3 +460,4 @@ export type ProjectEntity = typeof ProjectTable.$inferSelect;
 export type ProjectVersionEntity = typeof ProjectVersionTable.$inferSelect;
 export type DeliverableEntity = typeof DeliverableTable.$inferSelect;
 export type ProjectShareEntity = typeof ProjectShareTable.$inferSelect;
+export type ProjectFileEntity = typeof ProjectFileTable.$inferSelect;

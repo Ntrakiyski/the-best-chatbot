@@ -474,6 +474,26 @@
     "editingDisabled": "Editing is disabled for archived projects",
     "unarchiveToEdit": "Unarchive this project to make changes"
   },
+  "File": {
+    "files": "Files",
+    "createFile": "Create File",
+    "editFile": "Edit File",
+    "deleteFile": "Delete File",
+    "fileName": "File Name",
+    "fileContent": "File Content",
+    "confirmDelete": "Are you sure you want to delete this file?",
+    "fileSaved": "File saved successfully",
+    "notFound": "File not found",
+    "loadingFiles": "Loading files...",
+    "noFiles": "No files yet. Create your first file to get started.",
+    "fileNamePlaceholder": "My Document",
+    "contentPlaceholder": "Start typing...",
+    "updatedAgo": "Updated {time}",
+    "cancel": "Cancel",
+    "save": "Save",
+    "createFileDescription": "Create a new file for your project",
+    "editFileDescription": "Edit your project file"
+  },
   "Archive": {
     "title": "Archive",
     "addArchive": "Add Archive",
