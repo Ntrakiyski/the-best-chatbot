@@ -86,7 +86,7 @@ export function OpenRouterConfigContent() {
 
     try {
       const response = await fetch("/api/user/preferences", {
-        method: "POST",
+        method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...preferences,
