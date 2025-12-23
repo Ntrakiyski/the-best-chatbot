@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useProject } from "@/hooks/queries/use-projects";
+import { useProjectFiles } from "@/hooks/queries/use-files";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { Button } from "ui/button";
@@ -35,6 +36,7 @@ import {
   Save,
   X,
   Edit2,
+  FileText,
 } from "lucide-react";
 import { DeliverableStatus } from "app-types/project";
 import { toast } from "sonner";
@@ -49,6 +51,7 @@ import {
   updateDeliverableStatusAction,
   deleteDeliverableAction,
 } from "@/app/api/project/actions";
+import { FileList } from "@/components/file/FileList";
 
 interface ProjectDetailPageProps {
   projectId: string;
@@ -60,6 +63,15 @@ export default function ProjectDetailPage({
   const t = useTranslations();
   const router = useRouter();
   const { project, isLoading, error, mutate } = useProject(projectId);
+
+  // Files data
+  const {
+    files,
+    isLoading: isLoadingFiles,
+    createFile,
+    updateFile,
+    deleteFile,
+  } = useProjectFiles(projectId);
 
   // Editing state
   const [isEditingProject, setIsEditingProject] = useState(false);
@@ -903,6 +915,28 @@ export default function ProjectDetailPage({
             </CardContent>
           </Card>
         )}
+      </div>
+
+      {/* Files Section */}
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <FileText className="h-5 w-5" />
+            <h2 className="text-2xl font-bold">{t("File.files") || "Files"}</h2>
+            {files.length > 0 && (
+              <Badge variant="secondary">{files.length}</Badge>
+            )}
+          </div>
+        </div>
+
+        <FileList
+          files={files}
+          isLoading={isLoadingFiles}
+          onCreateFile={createFile}
+          onUpdateFile={updateFile}
+          onDeleteFile={deleteFile}
+          readOnly={isArchived}
+        />
       </div>
     </div>
   );

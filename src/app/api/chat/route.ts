@@ -17,6 +17,7 @@ import {
   agentRepository,
   chatRepository,
   projectRepository,
+  fileRepository,
 } from "lib/db/repository";
 import globalLogger from "logger";
 import {
@@ -25,6 +26,10 @@ import {
   buildToolCallUnsupportedModelSystemPrompt,
 } from "lib/ai/prompts";
 import { buildProjectContextPrompt } from "lib/ai/project-context";
+import {
+  buildFileContextPrompt,
+  truncateFileContext,
+} from "lib/ai/file-context";
 import {
   chatApiSchemaRequestBodySchema,
   ChatMention,
@@ -338,6 +343,7 @@ export async function POST(request: Request) {
 
         // Phase 3: Fetch project context if thread is linked to a project
         let projectContextPrompt: string | undefined = undefined;
+        let fileContextPrompt: string | undefined = undefined;
         if (thread?.projectId) {
           logger.info(`Thread ${id} has projectId: ${thread.projectId}`);
           try {
@@ -355,6 +361,31 @@ export async function POST(request: Request) {
             } else {
               logger.warn("buildProjectContextPrompt returned null/undefined");
             }
+
+            // Fetch file context for the project
+            try {
+              const projectFiles =
+                await fileRepository.getProjectFilesForContext(
+                  thread.projectId,
+                );
+              if (projectFiles && projectFiles.length > 0) {
+                logger.info(
+                  `Fetched ${projectFiles.length} files for project ${thread.projectId}`,
+                );
+                const rawFileContext = buildFileContextPrompt(projectFiles);
+                if (rawFileContext) {
+                  fileContextPrompt = truncateFileContext(rawFileContext);
+                  logger.info(
+                    `Built file context prompt (${fileContextPrompt.length} chars)`,
+                  );
+                }
+              } else {
+                logger.info(`No files found for project ${thread.projectId}`);
+              }
+            } catch (error) {
+              logger.error("Failed to fetch file context", error);
+              // Continue without file context - graceful degradation
+            }
           } catch (error) {
             logger.error("Failed to fetch project context", error);
             // Continue without project context - graceful degradation
@@ -366,6 +397,7 @@ export async function POST(request: Request) {
         const systemPrompt = mergeSystemPrompt(
           buildUserSystemPrompt(session.user, userPreferences, agent),
           projectContextPrompt,
+          fileContextPrompt,
           buildMcpServerCustomizationsSystemPrompt(mcpServerCustomizations),
           !supportToolCall && buildToolCallUnsupportedModelSystemPrompt,
         );
