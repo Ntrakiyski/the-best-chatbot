@@ -208,8 +208,7 @@ export function OpenRouterConfigContent() {
             </div>
             <p className="text-sm text-muted-foreground">
               {t("Chat.OpenRouterConfig.selectedCount", {
-                defaultValue: "{count} selected",
-                values: { count: selectedModels.size },
+                count: selectedModels.size,
               })}
             </p>
           </div>

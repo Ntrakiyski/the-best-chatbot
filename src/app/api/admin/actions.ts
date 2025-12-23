@@ -28,8 +28,11 @@ export const updateUserRolesAction = validatedActionWithAdminPermission(
         message: t("cannotUpdateOwnRole"),
       };
     }
+    // Better Auth only supports "admin" and "user" roles
+    // Map "editor" role to "user" for Better Auth, but keep custom role in our system
+    const betterAuthRole = role === "admin" ? "admin" : "user";
     await auth.api.setRole({
-      body: { userId, role },
+      body: { userId, role: betterAuthRole as "admin" | "user" },
       headers: await headers(),
     });
     await auth.api.revokeUserSessions({
