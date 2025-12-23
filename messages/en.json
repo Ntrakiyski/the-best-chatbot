@@ -327,6 +327,21 @@
       "confirmDeleteExport": "Are you sure you want to delete this export? This action cannot be undone.",
       "exportDeleted": "Export deleted successfully",
       "failedToDeleteExport": "Failed to delete export"
+    },
+    "OpenRouterConfig": {
+      "tabTitle": "OpenRouter Config",
+      "title": "OpenRouter Configuration",
+      "description": "Select which OpenRouter models you want to see in the chat interface. Only selected models will appear in the model dropdown. If no models are selected, all OpenRouter models will be available.",
+      "searchPlaceholder": "Search models by name or provider...",
+      "selectAll": "Select All",
+      "clearAll": "Clear All",
+      "selectedCount": "{count} selected",
+      "noModelsFound": "No models found.",
+      "savePreferences": "Save Preferences",
+      "preferencesSaved": "OpenRouter preferences saved successfully",
+      "failedToSavePreferences": "Failed to save preferences. Please try again.",
+      "errorLoading": "Error loading models",
+      "retry": "Retry"
     }
   },
   "Layout": {

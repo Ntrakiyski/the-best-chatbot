@@ -18,7 +18,8 @@ import {
   UserInstructionsContent,
   ExportsManagementContent,
 } from "./chat-preferences-content";
-import { UserIcon, X, Share2 } from "lucide-react";
+import { OpenRouterConfigContent } from "./chat-preferences/openrouter-config-content";
+import { UserIcon, X, Share2, Settings2 } from "lucide-react";
 import { Button } from "ui/button";
 import { useTranslations } from "next-intl";
 import { MCPIcon } from "ui/mcp-icon";
@@ -43,6 +44,12 @@ export function ChatPreferencesPopup() {
       {
         label: t("Chat.ChatPreferences.myExports"),
         icon: <Share2 className="w-4 h-4" />,
+      },
+      {
+        label: t("Chat.OpenRouterConfig.tabTitle", {
+          defaultValue: "OpenRouter Config",
+        }),
+        icon: <Settings2 className="w-4 h-4" />,
       },
     ];
   }, [t]);
@@ -157,6 +164,8 @@ export function ChatPreferencesPopup() {
                           <MCPInstructionsContent />
                         ) : tab == 2 ? (
                           <ExportsManagementContent />
+                        ) : tab == 3 ? (
+                          <OpenRouterConfigContent />
                         ) : null}
                       </>
                     )}
