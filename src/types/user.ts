@@ -9,6 +9,7 @@ export type UserPreferences = {
   profession?: string; // User's job or profession
   responseStyleExample?: string; // Example of preferred response style
   botName?: string; // Name of the bot
+  selectedOpenRouterModels?: string[]; // Array of selected OpenRouter model IDs
 };
 
 // user without password
@@ -86,4 +87,5 @@ export const UserPreferencesZodSchema = z.object({
   profession: z.string().optional(),
   responseStyleExample: z.string().optional(),
   botName: z.string().optional(),
+  selectedOpenRouterModels: z.array(z.string()).optional(),
 });

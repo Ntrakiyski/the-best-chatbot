@@ -188,6 +188,21 @@
       "userInstructionsDescription": "Preséntate y obtén una respuesta más personalizada.",
       "mcpInstructions": "Instrucciones MCP",
       "mcpInstructionsDescription": "Personaliza las instrucciones del servidor MCP."
+    },
+    "OpenRouterConfig": {
+      "tabTitle": "Configuración OpenRouter",
+      "title": "Configuración de OpenRouter",
+      "description": "Selecciona qué modelos de OpenRouter quieres ver en la interfaz de chat. Solo los modelos seleccionados aparecerán en el menú desplegable. Si no se seleccionan modelos, todos los modelos de OpenRouter estarán disponibles.",
+      "searchPlaceholder": "Buscar modelos por nombre o proveedor...",
+      "selectAll": "Seleccionar Todo",
+      "clearAll": "Limpiar Todo",
+      "selectedCount": "{count} seleccionados",
+      "noModelsFound": "No se encontraron modelos.",
+      "savePreferences": "Guardar Preferencias",
+      "preferencesSaved": "Preferencias de OpenRouter guardadas exitosamente",
+      "failedToSavePreferences": "Error al guardar las preferencias. Por favor, inténtalo de nuevo.",
+      "errorLoading": "Error al cargar modelos",
+      "retry": "Reintentar"
     }
   },
   "Layout": {
