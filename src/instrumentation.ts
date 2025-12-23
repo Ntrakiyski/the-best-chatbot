@@ -3,33 +3,35 @@ import * as Sentry from "@sentry/nextjs";
 
 export async function register() {
   if (process.env.NEXT_RUNTIME === "nodejs") {
-    if (!IS_VERCEL_ENV) {
-      // Run DB migration with Sentry instrumentation
-      await Sentry.startSpan(
-        {
-          name: "db.migration",
-          op: "db.migration",
-          attributes: {
-            environment: process.env.NODE_ENV || "unknown",
-          },
+    // Run DB migration with Sentry instrumentation
+    // This now runs in ALL environments (local, Docker, and Vercel)
+    await Sentry.startSpan(
+      {
+        name: "db.migration",
+        op: "db.migration",
+        attributes: {
+          environment: process.env.NODE_ENV || "unknown",
         },
-        async () => {
-          const runMigrate = await import("./lib/db/pg/migrate.pg").then(
-            (m) => m.runMigrate,
-          );
-          await runMigrate().catch((e) => {
-            Sentry.captureException(e, {
-              tags: {
-                component: "db-migration",
-              },
-            });
-            console.error(e);
-            process.exit(1);
+      },
+      async () => {
+        const runMigrate = await import("./lib/db/pg/migrate.pg").then(
+          (m) => m.runMigrate,
+        );
+        await runMigrate().catch((e) => {
+          Sentry.captureException(e, {
+            tags: {
+              component: "db-migration",
+            },
           });
-        },
-      );
-      
-      // Initialize MCP Manager with Sentry instrumentation
+          console.error(e);
+          process.exit(1);
+        });
+      },
+    );
+
+    // Initialize MCP Manager with Sentry instrumentation
+    // Only run MCP initialization in non-Vercel environments
+    if (!IS_VERCEL_ENV) {
       await Sentry.startSpan(
         {
           name: "mcp.manager.init",
@@ -42,14 +44,14 @@ export async function register() {
           const { initMCPManager, mcpClientsManager } = await import(
             "./lib/ai/mcp/mcp-manager"
           );
-          
+
           try {
             await initMCPManager();
-            
+
             // Capture MCP initialization event (custom event #9)
             const clients = await mcpClientsManager.getClients();
             const tools = await mcpClientsManager.tools();
-            
+
             Sentry.captureMessage("mcp.manager.init", {
               level: "info",
               tags: {
@@ -61,7 +63,7 @@ export async function register() {
                 serverNames: clients.map((c) => c.id),
               },
             });
-            
+
             Sentry.setTag("mcp.servers", clients.length.toString());
             Sentry.setTag("mcp.tools", Object.keys(tools).length.toString());
           } catch (error) {
