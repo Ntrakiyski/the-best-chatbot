@@ -1,5 +1,5 @@
 import { eq, and, desc, sql } from "drizzle-orm";
-import { db } from "../db.pg";
+import { pgDb as db } from "../db.pg";
 import { ProjectFileTable, ProjectTable } from "../schema.pg";
 import type {
   ProjectFile,

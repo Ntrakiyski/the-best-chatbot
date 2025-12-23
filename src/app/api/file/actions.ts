@@ -3,11 +3,7 @@
 import { headers } from "next/headers";
 import { auth } from "auth/server";
 import { fileRepository } from "lib/db/repository";
-import {
-  createFileSchema,
-  updateFileSchema,
-  deleteFileSchema,
-} from "./validations";
+import { createFileSchema, updateFileSchema } from "./validations";
 import type { ProjectFile } from "app-types/file";
 
 /**
