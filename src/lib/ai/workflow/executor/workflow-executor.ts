@@ -18,7 +18,6 @@ import { convertDBNodeToUINode } from "../shared.workflow";
 import globalLogger from "logger";
 import { ConsolaInstance } from "consola";
 import { colorize } from "consola/utils";
-import * as Sentry from "@sentry/nextjs";
 
 /**
  * Maps node kinds to their corresponding executor functions.
@@ -190,7 +189,6 @@ export const createWorkflowExecutor = (workflow: {
     });
 
   // Set up event logging for workflow execution monitoring
-  let workflowSpan: ReturnType<typeof Sentry.startInactiveSpan> | null = null;
   
   app.subscribe((event) => {
     if (event.eventType == "WORKFLOW_START") {
@@ -200,7 +198,6 @@ export const createWorkflowExecutor = (workflow: {
       );
       
       // Custom event #7: workflow.execution.started
-      workflowSpan = Sentry.startInactiveSpan({
         name: "workflow.execution",
         op: "workflow.execute",
         attributes: {
@@ -209,7 +206,6 @@ export const createWorkflowExecutor = (workflow: {
         },
       });
       
-      Sentry.addBreadcrumb({
         category: "workflow",
         message: "Workflow execution started",
         level: "info",
@@ -234,7 +230,6 @@ export const createWorkflowExecutor = (workflow: {
         
         if (!event.isOk && event.error) {
           workflowSpan.setStatus({ code: 2, message: "error" });
-          Sentry.captureException(event.error, {
             tags: {
               component: "workflow-executor",
             },

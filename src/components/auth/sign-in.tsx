@@ -23,7 +23,6 @@ import { GoogleIcon } from "ui/google-icon";
 import { useTranslations } from "next-intl";
 import { MicrosoftIcon } from "ui/microsoft-icon";
 import { SocialAuthenticationProvider } from "app-types/authentication";
-import * as Sentry from "@sentry/nextjs";
 
 export default function SignIn({
   emailAndPasswordEnabled,
@@ -50,19 +49,6 @@ export default function SignIn({
     
     // Custom event #1: auth.sign_in.attempt
     const emailDomain = formData.email.split("@")[1] || "unknown";
-    Sentry.captureMessage("auth.sign_in.attempt", {
-      level: "info",
-      tags: {
-        component: "auth",
-        provider: "email",
-        isFirstUser: isFirstUser.toString(),
-      },
-      extra: {
-        emailDomain,
-        timestamp: new Date().toISOString(),
-      },
-    });
-    
     safe(() =>
       authClient.signIn.email(
         {
@@ -73,17 +59,6 @@ export default function SignIn({
         {
           onError(ctx) {
             // Custom event #2: auth.sign_in.error
-            Sentry.captureException(new Error("Sign-in failed"), {
-              level: "warning",
-              tags: {
-                component: "auth",
-                provider: "email",
-              },
-              extra: {
-                errorMessage: ctx.error.message || ctx.error.statusText,
-                emailDomain,
-              },
-            });
             
             toast.error(ctx.error.message || ctx.error.statusText);
           },
@@ -96,31 +71,7 @@ export default function SignIn({
 
   const handleSocialSignIn = (provider: SocialAuthenticationProvider) => {
     // Custom event #1: auth.sign_in.attempt (social)
-    Sentry.captureMessage("auth.sign_in.attempt", {
-      level: "info",
-      tags: {
-        component: "auth",
-        provider,
-        isFirstUser: isFirstUser.toString(),
-      },
-      extra: {
-        timestamp: new Date().toISOString(),
-      },
-    });
-    
-    authClient.signIn.social({ provider }).catch((e) => {
       // Custom event #2: auth.sign_in.error (social)
-      Sentry.captureException(new Error("Social sign-in failed"), {
-        level: "warning",
-        tags: {
-          component: "auth",
-          provider,
-        },
-        extra: {
-          errorMessage: e.error,
-        },
-      });
-      
       toast.error(e.error);
     });
   };
