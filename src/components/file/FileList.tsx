@@ -39,7 +39,8 @@ export function FileList({
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [editingFile, setEditingFile] = useState<ProjectFile | null>(null);
 
-  const handleCreate = async (data: { name: string; content?: string }) => {
+  const handleCreate = async (data: { name?: string; content?: string }) => {
+    if (!data.name) return;
     await onCreateFile(data);
     setIsCreateModalOpen(false);
   };
