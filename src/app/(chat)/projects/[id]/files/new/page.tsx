@@ -3,7 +3,10 @@
 import { useState, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { FileEditorHeader } from "@/components/file/FileEditorHeader";
-import { FileEditorContent } from "@/components/file/FileEditorContent";
+import {
+  FileEditorContent,
+  type FileEditorContentRef,
+} from "@/components/file/FileEditorContent";
 import { createFileAction } from "@/app/api/file/actions";
 import { toast } from "sonner";
 import { useTranslations } from "next-intl";
@@ -26,7 +29,7 @@ function NewFilePageClient({ params }: NewFilePageProps) {
     content: "",
     isDirty: false,
   });
-  const blockNoteEditorRef = useRef<any>(null);
+  const fileEditorRef = useRef<FileEditorContentRef>(null);
 
   // Unwrap params
   useState(() => {
@@ -57,8 +60,8 @@ function NewFilePageClient({ params }: NewFilePageProps) {
     try {
       // Get current content from editor if available
       let currentContent = fileData.content;
-      if (blockNoteEditorRef.current?.getCurrentContent) {
-        currentContent = blockNoteEditorRef.current.getCurrentContent();
+      if (fileEditorRef.current?.getCurrentContent) {
+        currentContent = fileEditorRef.current.getCurrentContent();
       }
 
       await createFileAction({
@@ -123,6 +126,7 @@ function NewFilePageClient({ params }: NewFilePageProps) {
       />
       <div className="flex-1 overflow-hidden">
         <FileEditorContent
+          ref={fileEditorRef}
           mode="create"
           initialName=""
           initialContent=""
