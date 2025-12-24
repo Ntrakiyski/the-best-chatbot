@@ -35,13 +35,19 @@ import { authClient } from "auth/client";
 import { useTranslations } from "next-intl";
 import useSWR from "swr";
 import { getLocaleAction } from "@/i18n/get-locale";
-import { Suspense, useCallback } from "react";
+import { Suspense, useCallback, useState } from "react";
 import { GithubIcon } from "ui/github-icon";
 import { DiscordIcon } from "ui/discord-icon";
 import { useThemeStyle } from "@/hooks/use-theme-style";
 import { BasicUser } from "app-types/user";
 import { getUserAvatar } from "lib/user/utils";
 import { Skeleton } from "ui/skeleton";
+import { getIsUserAdmin } from "lib/user/utils";
+import { useRouter } from "next/navigation";
+import { useArchives } from "@/hooks/queries/use-archives";
+import { ArchiveDialog } from "../archive-dialog";
+import { Shield, FolderOpenIcon, FolderSearchIcon, PlusIcon } from "lucide-react";
+import Link from "next/link";
 
 export function AppSidebarUserInner(props: {
   user?: BasicUser;
@@ -56,6 +62,14 @@ export function AppSidebarUserInner(props: {
   });
   const appStoreMutate = appStore((state) => state.mutate);
   const t = useTranslations("Layout");
+  const router = useRouter();
+  const [expandedArchive, setExpandedArchive] = useState(false);
+  const [addArchiveDialogOpen, setAddArchiveDialogOpen] = useState(false);
+
+  const { data: archives, isLoading: isLoadingArchives } = useArchives();
+  const toggleArchive = useCallback(() => {
+    setExpandedArchive((prev) => !prev);
+  }, []);
 
   const logout = () => {
     authClient.signOut().finally(() => {
@@ -66,115 +80,180 @@ export function AppSidebarUserInner(props: {
   if (!user) return null;
 
   return (
-    <SidebarMenu>
-      <SidebarMenuItem>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <SidebarMenuButton
-              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground bg-input/30 border"
-              size={"lg"}
-              data-testid="sidebar-user-button"
-            >
-              <Avatar className="rounded-full size-8 border">
-                <AvatarImage
-                  className="object-cover"
-                  src={getUserAvatar(user)}
-                  alt={user?.name || "User"}
-                />
-                <AvatarFallback>{user?.name?.slice(0, 1) || ""}</AvatarFallback>
-              </Avatar>
-              <span className="truncate" data-testid="sidebar-user-email">
-                {user?.email}
-              </span>
-              <ChevronsUpDown className="ml-auto" />
-            </SidebarMenuButton>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent
-            side="top"
-            className="bg-background w-[--radix-dropdown-menu-trigger-width] min-w-60 rounded-lg"
-            align="center"
-          >
-            <DropdownMenuLabel className="p-0 font-normal">
-              <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-                <Avatar className="h-8 w-8 rounded-full">
+    <>
+      <SidebarMenu>
+        <SidebarMenuItem>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <SidebarMenuButton
+                className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground bg-input/30 border"
+                size={"lg"}
+                data-testid="sidebar-user-button"
+              >
+                <Avatar className="rounded-full size-8 border">
                   <AvatarImage
+                    className="object-cover"
                     src={getUserAvatar(user)}
                     alt={user?.name || "User"}
                   />
-                  <AvatarFallback className="rounded-lg">
-                    {user?.name?.slice(0, 1) || ""}
-                  </AvatarFallback>
+                  <AvatarFallback>{user?.name?.slice(0, 1) || ""}</AvatarFallback>
                 </Avatar>
-                <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span
-                    className="truncate font-medium"
-                    data-testid="sidebar-user-name"
-                  >
-                    {user?.name}
-                  </span>
-                  <span className="truncate text-xs text-muted-foreground">
-                    {user?.email}
-                  </span>
+                <span className="truncate" data-testid="sidebar-user-email">
+                  {user?.email}
+                </span>
+                <ChevronsUpDown className="ml-auto" />
+              </SidebarMenuButton>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent
+              side="top"
+              className="bg-background w-[--radix-dropdown-menu-trigger-width] min-w-60 rounded-lg"
+              align="center"
+            >
+              <DropdownMenuLabel className="p-0 font-normal">
+                <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
+                  <Avatar className="h-8 w-8 rounded-full">
+                    <AvatarImage
+                      src={getUserAvatar(user)}
+                      alt={user?.name || "User"}
+                    />
+                    <AvatarFallback className="rounded-lg">
+                      {user?.name?.slice(0, 1) || ""}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="grid flex-1 text-left text-sm leading-tight">
+                    <span
+                      className="truncate font-medium"
+                      data-testid="sidebar-user-name"
+                    >
+                      {user?.name}
+                    </span>
+                    <span className="truncate text-xs text-muted-foreground">
+                      {user?.email}
+                    </span>
+                  </div>
                 </div>
-              </div>
-            </DropdownMenuLabel>
-            <DropdownMenuSeparator />
+              </DropdownMenuLabel>
+              <DropdownMenuSeparator />
 
-            <DropdownMenuItem
-              className="cursor-pointer"
-              onClick={() => appStoreMutate({ openChatPreferences: true })}
-            >
-              <Settings2 className="size-4 text-foreground" />
-              <span>{t("chatPreferences")}</span>
-            </DropdownMenuItem>
-            <SelectTheme />
-            <SelectLanguage />
-            <DropdownMenuSeparator />
-            <DropdownMenuItem
-              className="cursor-pointer"
-              onClick={() => appStoreMutate({ openShortcutsPopup: true })}
-            >
-              <Command className="size-4 text-foreground" />
-              <span>{t("keyboardShortcuts")}</span>
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={() => {
-                window.open(
-                  "https://github.com/cgoinglove/better-chatbot/issues/new",
-                  "_blank",
-                );
-              }}
-            >
-              <GithubIcon className="size-4 fill-foreground" />
-              <span>{t("reportAnIssue")}</span>
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={() => {
-                window.open("https://discord.gg/gCRu69Upnp", "_blank");
-              }}
-            >
-              <DiscordIcon className="size-4 fill-foreground" />
-              <span>{t("joinCommunity")}</span>
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
+              <DropdownMenuItem
+                className="cursor-pointer"
+                onClick={() => appStoreMutate({ openChatPreferences: true })}
+              >
+                <Settings2 className="size-4 text-foreground" />
+                <span>{t("chatPreferences")}</span>
+              </DropdownMenuItem>
+              <SelectTheme />
+              <SelectLanguage />
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                className="cursor-pointer"
+                onClick={() => appStoreMutate({ openShortcutsPopup: true })}
+              >
+                <Command className="size-4 text-foreground" />
+                <span>{t("keyboardShortcuts")}</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => {
+                  window.open(
+                    "https://github.com/cgoinglove/better-chatbot/issues/new",
+                    "_blank",
+                  );
+                }}
+              >
+                <GithubIcon className="size-4 fill-foreground" />
+                <span>{t("reportAnIssue")}</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => {
+                  window.open("https://discord.gg/gCRu69Upnp", "_blank");
+                }}
+              >
+                <DiscordIcon className="size-4 fill-foreground" />
+                <span>{t("joinCommunity")}</span>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
 
-            <DropdownMenuItem
-              onClick={() => appStoreMutate({ openUserSettings: true })}
-              className="cursor-pointer"
-              data-testid="user-settings-menu-item"
-            >
-              <Settings className="size-4 text-foreground" />
-              <span>User Settings</span>
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={logout} className="cursor-pointer">
-              <LogOutIcon className="size-4 text-foreground" />
-              <span>{t("signOut")}</span>
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </SidebarMenuItem>
-    </SidebarMenu>
+              {getIsUserAdmin(user) && (
+                <DropdownMenuItem asChild className="cursor-pointer">
+                  <Link href="/admin" data-testid="admin-sidebar-link">
+                    <Shield className="size-4 text-foreground" />
+                    <span>Admin</span>
+                  </Link>
+                </DropdownMenuItem>
+              )}
+
+              <DropdownMenuSub>
+                <DropdownMenuSubTrigger
+                  className="cursor-pointer"
+                  onClick={toggleArchive}
+                >
+                  {expandedArchive ? (
+                    <FolderOpenIcon className="size-4" />
+                  ) : (
+                    <FolderSearchIcon className="size-4" />
+                  )}
+                  <span>{t("Archive.title")}</span>
+                </DropdownMenuSubTrigger>
+                {expandedArchive && (
+                  <DropdownMenuPortal>
+                    <DropdownMenuSubContent className="w-48">
+                      <DropdownMenuItem
+                        className="cursor-pointer"
+                        onClick={() => setAddArchiveDialogOpen(true)}
+                      >
+                        <PlusIcon className="size-4" />
+                        <span>{t("Archive.addArchive")}</span>
+                      </DropdownMenuItem>
+                      {isLoadingArchives ? (
+                        <div className="gap-2 flex flex-col p-2">
+                          {Array.from({ length: 2 }).map((_, index) => (
+                            <Skeleton key={index} className="h-6 w-full" />
+                          ))}
+                        </div>
+                      ) : archives!.length === 0 ? (
+                        <DropdownMenuItem disabled>
+                          <span className="text-muted-foreground">{t("Archive.noArchives")}</span>
+                        </DropdownMenuItem>
+                      ) : (
+                        archives!.map((archive) => (
+                          <DropdownMenuItem
+                            key={archive.id}
+                            className="cursor-pointer"
+                            onClick={() => {
+                              router.push(`/archive/${archive.id}`);
+                            }}
+                          >
+                            <span>{archive.name}</span>
+                          </DropdownMenuItem>
+                        ))
+                      )}
+                    </DropdownMenuSubContent>
+                  </DropdownMenuPortal>
+                )}
+              </DropdownMenuSub>
+
+              <DropdownMenuItem
+                onClick={() => appStoreMutate({ openUserSettings: true })}
+                className="cursor-pointer"
+                data-testid="user-settings-menu-item"
+              >
+                <Settings className="size-4 text-foreground" />
+                <span>User Settings</span>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={logout} className="cursor-pointer">
+                <LogOutIcon className="size-4 text-foreground" />
+                <span>{t("signOut")}</span>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </SidebarMenuItem>
+      </SidebarMenu>
+      <ArchiveDialog
+        open={addArchiveDialogOpen}
+        onOpenChange={setAddArchiveDialogOpen}
+      />
+    </>
   );
 }
 
