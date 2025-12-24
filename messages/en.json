@@ -483,6 +483,7 @@
     "fileContent": "File Content",
     "confirmDelete": "Are you sure you want to delete this file?",
     "fileSaved": "File saved successfully",
+    "fileUpdated": "File updated successfully",
     "notFound": "File not found",
     "loadingFiles": "Loading files...",
     "noFiles": "No files yet. Create your first file to get started.",

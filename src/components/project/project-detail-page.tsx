@@ -51,6 +51,11 @@ import {
   updateDeliverableStatusAction,
   deleteDeliverableAction,
 } from "@/app/api/project/actions";
+import {
+  createFileAction,
+  updateFileAction,
+  deleteFileAction,
+} from "@/app/api/file/actions";
 import { FileList } from "@/components/file/FileList";
 
 interface ProjectDetailPageProps {
@@ -65,13 +70,7 @@ export default function ProjectDetailPage({
   const { project, isLoading, error, mutate } = useProject(projectId);
 
   // Files data
-  const {
-    files,
-    isLoading: isLoadingFiles,
-    createFile,
-    updateFile,
-    deleteFile,
-  } = useProjectFiles(projectId);
+  const { files, isLoading: isLoadingFiles } = useProjectFiles(projectId);
 
   // Editing state
   const [isEditingProject, setIsEditingProject] = useState(false);
@@ -275,6 +274,57 @@ export default function ProjectDetailPage({
     }
   };
 
+  // Create file
+  const handleCreateFile = async (data: {
+    name: string;
+    content?: string;
+  }) => {
+    try {
+      const file = await createFileAction({
+        projectId,
+        name: data.name,
+        content: data.content,
+      });
+      toast.success(t("File.created") || "File created successfully!");
+      mutate();
+      return file;
+    } catch (error) {
+      console.error("Error creating file:", error);
+      toast.error(t("File.failedToCreate") || "Failed to create file");
+      throw error;
+    }
+  };
+
+  // Update file
+  const handleUpdateFile = async (
+    fileId: string,
+    data: { name?: string; content?: string },
+  ) => {
+    try {
+      const file = await updateFileAction(fileId, data);
+      toast.success(t("File.fileUpdated") || "File updated successfully!");
+      mutate();
+      return file;
+    } catch (error) {
+      console.error("Error updating file:", error);
+      toast.error(t("File.failedToUpdate") || "Failed to update file");
+      throw error;
+    }
+  };
+
+  // Delete file
+  const handleDeleteFile = async (fileId: string) => {
+    try {
+      await deleteFileAction(fileId);
+      toast.success(t("File.deleted") || "File deleted successfully!");
+      mutate();
+    } catch (error) {
+      console.error("Error deleting file:", error);
+      toast.error(t("File.failedToDelete") || "Failed to delete file");
+      throw error;
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="w-full flex flex-col gap-4 p-4 md:p-8">
@@ -345,7 +395,7 @@ export default function ProjectDetailPage({
         <CardHeader>
           <div className="flex items-start justify-between">
             <div className="flex items-start gap-3 flex-1">
-              <div className="flex-shrink-0 w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center">
+              <div className="shrink-0 w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center">
                 <FolderOpen className="size-6 text-primary" />
               </div>
               <div className="flex-1">
@@ -932,9 +982,9 @@ export default function ProjectDetailPage({
         <FileList
           files={files}
           isLoading={isLoadingFiles}
-          onCreateFile={createFile}
-          onUpdateFile={updateFile}
-          onDeleteFile={deleteFile}
+          onCreateFile={handleCreateFile}
+          onUpdateFile={handleUpdateFile}
+          onDeleteFile={handleDeleteFile}
           readOnly={isArchived}
         />
       </div>

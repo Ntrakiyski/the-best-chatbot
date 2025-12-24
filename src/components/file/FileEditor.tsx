@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useTranslations } from "next-intl";
 import {
   Dialog,
@@ -37,6 +37,7 @@ export function FileEditor({
   const [name, setName] = useState(initialName);
   const [content, setContent] = useState(initialContent);
   const [isSaving, setIsSaving] = useState(false);
+  const blockNoteEditorRef = useRef<any>(null);
 
   // Reset state when modal opens/closes
   useEffect(() => {
@@ -53,9 +54,22 @@ export function FileEditor({
 
     setIsSaving(true);
     try {
+      // Get current content from editor if available
+      let currentContent = content;
+      if (blockNoteEditorRef.current) {
+        try {
+          const blocks = blockNoteEditorRef.current.document;
+          currentContent = JSON.stringify(blocks);
+        } catch (_error) {
+          console.warn(
+            "Could not get current editor content, using state content",
+          );
+        }
+      }
+
       await onSave({
         name: name.trim(),
-        content: content,
+        content: currentContent,
       });
       onClose();
     } catch (error) {
@@ -103,6 +117,7 @@ export function FileEditor({
               onSave={handleContentChange}
               placeholder={t("File.contentPlaceholder")}
               className="h-full"
+              editorRef={blockNoteEditorRef}
             />
           </div>
         </div>

@@ -302,6 +302,184 @@
         </IndustryPredictions>
     </FutureVisionAndRoadmap>
 
+    <FileFeatureArchitecture>
+        <Overview>
+            The File Feature is a sophisticated project-based file management system that seamlessly integrates with the AI chatbot platform. It transforms simple file storage into an intelligent, context-aware collaboration tool where files become active participants in AI conversations and project workflows.
+        </Overview>
+        
+        <CoreComponents>
+            <Component name="Project-Based Organization">
+                <Description>Files are organized within projects, creating logical groupings that provide context for AI interactions and team collaboration.</Description>
+                <Features>
+                    <Feature>Project association for all files</Feature>
+                    <Feature>Tech stack and deliverable tracking</Feature>
+                    <Feature>Custom project instructions and context</Feature>
+                    <Feature>Project sharing with permission levels</Feature>
+                </Features>
+            </Component>
+            <Component name="Intelligent File Management">
+                <Description>Comprehensive file operations with real-time editing, version tracking, and AI-powered assistance.</Description>
+                <Features>
+                    <Feature>File creation with name and content</Feature>
+                    <Feature>Real-time collaborative editing</Feature>
+                    <Feature>Soft delete functionality (files marked but not permanently removed)</Feature>
+                    <Feature>File metadata tracking (size, dates, ownership)</Feature>
+                    <Feature>Content type support (Markdown, plain text)</Feature>
+                </Features>
+            </Component>
+            <Component name="AI Context Integration">
+                <Description>Files automatically become part of the project's AI context, enabling intelligent conversations and assistance.</Description>
+                <Features>
+                    <Feature>Automatic context injection during chats</Feature>
+                    <Feature>AI analysis of file content</Feature>
+                    <Feature>Context-aware suggestions and improvements</Feature>
+                    <Feature>Project structure understanding</Feature>
+                </Features>
+            </Component>
+            <Component name="Storage Abstraction Layer">
+                <Description>Flexible storage backend supporting multiple providers with secure upload mechanisms.</Description>
+                <Features>
+                    <Feature>Multi-storage support (AWS S3, Vercel Blob)</Feature>
+                    <Feature>Secure presigned URL uploads</Feature>
+                    <Feature>Storage provider abstraction</Feature>
+                    <Feature>Enterprise-grade security</Feature>
+                </Features>
+            </Component>
+            <Component name="Workflow Integration">
+                <Description>Files integrate with the visual workflow builder for automated file processing and manipulation.</Description>
+                <Features>
+                    <Feature>File-based workflow triggers</Feature>
+                    <Feature>File content as workflow inputs/outputs</Feature>
+                    <Feature>Automated file processing workflows</Feature>
+                    <Feature>Integration with MCP tools</Feature>
+                </Features>
+            </Component>
+        </CoreComponents>
+        
+        <UserFlows>
+            <Flow name="Project File Management">
+                <Step number="1" action="Create Project">User creates a new project with tech stack, deliverables, and custom instructions</Step>
+                <Step number="2" action="Add Files">User uploads or creates files within the project context</Step>
+                <Step number="3" action="Organize Files">Files are automatically associated with the project and organized</Step>
+                <Step number="4" action="Collaborate">Team members can view, edit, and comment on project files</Step>
+                <Step number="5" action="AI Assistance">AI provides context-aware help based on project files and goals</Step>
+            </Flow>
+            <Flow name="AI-Powered File Assistance">
+                <Step number="1" action="Context Injection">Project files are automatically included in AI context</Step>
+                <Step number="2" action="Intelligent Chat">User asks AI questions about file content or project structure</Step>
+                <Step number="3" action="AI Analysis">AI analyzes files and provides suggestions</Step>
+                <Step number="4" action="Collaborative Editing">AI suggestions can be applied directly to files</Step>
+                <Step number="5" action="Continuous Learning">AI learns from file interactions to improve future assistance</Step>
+            </Flow>
+            <Flow name="Workflow Automation">
+                <Step number="1" action="File Trigger">New file upload or modification triggers workflow</Step>
+                <Step number="2" action="Processing Chain">Workflow processes file through multiple steps</Step>
+                <Step number="3" action="AI Integration">MCP tools and AI agents process file content</Step>
+                <Step number="4" action="Output Generation">Workflow generates new files or modifies existing ones</Step>
+                <Step number="5" action="Notification">Users are notified of workflow completion</Step>
+            </Flow>
+        </UserFlows>
+        
+        <TechnicalImplementation>
+            <DatabaseSchema>
+                <Table name="project_file">
+                    <Column name="id" type="uuid" description="Unique file identifier"/>
+                    <Column name="project_id" type="uuid" description="Associated project"/>
+                    <Column name="name" type="varchar(255)" description="File name"/>
+                    <Column name="content" type="text" description="File content"/>
+                    <Column name="content_type" type="varchar(50)" description="File type (markdown/text)"/>
+                    <Column name="size" type="text" description="File size"/>
+                    <Column name="user_id" type="uuid" description="File owner"/>
+                    <Column name="is_deleted" type="boolean" description="Soft delete flag"/>
+                    <Column name="created_at" type="timestamp" description="Creation timestamp"/>
+                    <Column name="updated_at" type="timestamp" description="Last modification timestamp"/>
+                </Table>
+            </DatabaseSchema>
+            <APIEndpoints>
+                <Endpoint path="/api/file" method="GET" description="List files for a project"/>
+                <Endpoint path="/api/file" method="POST" description="Create new file"/>
+                <Endpoint path="/api/file/[id]" method="GET" description="Get file by ID"/>
+                <Endpoint path="/api/file/[id]" method="PUT" description="Update file content"/>
+                <Endpoint path="/api/file/[id]" method="DELETE" description="Soft delete file"/>
+                <Endpoint path="/api/storage/upload-url" method="POST" description="Get presigned upload URL"/>
+                <Endpoint path="/api/storage/upload" method="POST" description="Upload file to storage"/>
+            </APIEndpoints>
+            <ReactComponents>
+                <Component name="FileList" path="src/components/file/FileList.tsx">
+                    <Description>Displays list of files within a project with CRUD operations</Description>
+                    <Features>File listing, creation modal, edit/delete actions, real-time updates</Features>
+                </Component>
+                <Component name="FileEditor" path="src/components/file/FileEditor.tsx">
+                    <Description>Rich text editor for file content with markdown support</Description>
+                    <Features>Real-time editing, markdown formatting, auto-save, collaboration</Features>
+                </Component>
+                <Component name="ProjectDetailPage" path="src/components/project/project-detail-page.tsx">
+                    <Description>Project overview page with integrated file management</Description>
+                    <Features>Project info, file list, AI context integration, workflow triggers</Features>
+                </Component>
+            </ReactComponents>
+        </TechnicalImplementation>
+        
+        <IntegrationPoints>
+            <WithAIChat>
+                <Description>Files automatically become part of project context during AI conversations</Description>
+                <Benefits>Context-aware responses, file content analysis, intelligent suggestions</Benefits>
+            </WithAIChat>
+            <WithMCP>
+                <Description>Files can be processed by MCP tools and agents</Description>
+                <Benefits>Automated file analysis, content transformation, workflow integration</Benefits>
+            </WithMCP>
+            <WithWorkflows>
+                <Description>Files serve as inputs, outputs, and triggers for visual workflows</Description>
+                <Benefits>Automated file processing, batch operations, intelligent workflows</Benefits>
+            </WithWorkflows>
+            <WithPermissions>
+                <Description>File access controlled through project sharing and role-based permissions</Description>
+                <Benefits>Secure collaboration, granular access control, team management</Benefits>
+            </WithPermissions>
+        </IntegrationPoints>
+        
+        <UserExperienceHighlights>
+            <Feature name="Seamless AI Integration">
+                <Description>Files aren't just storage - they're active participants in AI conversations</Description>
+                <Impact>Users get context-aware assistance without manual file uploads</Impact>
+            </Feature>
+            <Feature name="Real-Time Collaboration">
+                <Description>Multiple users can work on files simultaneously with live updates</Description>
+                <Impact>Enhanced team productivity and immediate feedback</Impact>
+            </Feature>
+            <Feature name="Smart Context Injection">
+                <Description>Project structure and files automatically inform AI responses</Description>
+                <Impact>More accurate and relevant AI assistance</Impact>
+            </Feature>
+            <Feature name="Workflow Automation">
+                <Description>Files trigger and participate in automated workflows</Description>
+                <Impact>Reduced manual work and consistent file processing</Impact>
+            </Feature>
+        </UserExperienceHighlights>
+        
+        <EnterpriseFeatures>
+            <Security>
+                <Feature>Role-based file access control</Feature>
+                <Feature>Secure file uploads via presigned URLs</Feature>
+                <Feature>Enterprise storage provider support</Feature>
+                <Feature>Audit logging for file operations</Feature>
+            </Security>
+            <Scalability>
+                <Feature>Multi-storage backend support</Feature>
+                <Feature>Efficient file metadata indexing</Feature>
+                <Feature>Optimized file content retrieval</Feature>
+                <Feature>Scalable collaboration features</Feature>
+            </Scalability>
+            <Compliance>
+                <Feature>Soft delete for data retention</Feature>
+                <Feature>File access audit trails</Feature>
+                <Feature>Project-based data isolation</Feature>
+                <Feature>Secure file sharing controls</Feature>
+            </Compliance>
+        </EnterpriseFeatures>
+    </FileFeatureArchitecture>
+
     <CommunityEngagementProfile>
         <ContributionStyle>Builder and Enabler. You lead by example, creating a high-quality, well-documented open-source project. You enable others to contribute effectively by providing clear guidelines (`CONTRIBUTING.md`), a robust testing framework, and a modular architecture that is easy to understand and extend.</ContributionStyle>
         <Platforms>
