@@ -8,9 +8,10 @@ const BUILD_OUTPUT = process.env.NEXT_STANDALONE_OUTPUT
 const isDev = process.env.NODE_ENV === "development";
 
 // Bundle analyzer support
-const withBundleAnalyzer = process.env.ANALYZE === "true"
-  ? require("@next/bundle-analyzer")({ enabled: true })
-  : (config: NextConfig) => config;
+const withBundleAnalyzer =
+  process.env.ANALYZE === "true"
+    ? require("@next/bundle-analyzer")({ enabled: true })
+    : (config: NextConfig) => config;
 
 export default () => {
   const nextConfig: NextConfig = {
@@ -29,7 +30,7 @@ export default () => {
       webpackBuildWorker: true,
     },
     // Optimize webpack configuration for better performance
-    webpack: (config, { dev, isServer }) => {
+    webpack: (config, { dev }) => {
       // Enable filesystem caching for faster incremental builds
       if (dev) {
         config.cache = {
@@ -39,7 +40,7 @@ export default () => {
           },
         };
       }
-      
+
       return config;
     },
     // Disable source maps in production for faster builds (no Sentry)
@@ -48,12 +49,14 @@ export default () => {
     swcMinify: true,
     // Remove console logs in production for smaller bundles
     compiler: {
-      removeConsole: isDev ? false : {
-        exclude: ["error", "warn", "info"],
-      },
+      removeConsole: isDev
+        ? false
+        : {
+            exclude: ["error", "warn", "info"],
+          },
     },
   };
-  
+
   const withNextIntl = createNextIntlPlugin();
   return withBundleAnalyzer(withNextIntl(nextConfig));
 };

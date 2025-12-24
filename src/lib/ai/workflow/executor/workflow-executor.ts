@@ -189,26 +189,25 @@ export const createWorkflowExecutor = (workflow: {
     });
 
   // Set up event logging for workflow execution monitoring
-  
+
   app.subscribe((event) => {
     if (event.eventType == "WORKFLOW_START") {
       needTable = buildNeedTable(workflow.edges);
       logger.debug(
         `[${event.eventType}] ${workflow.nodes.length} nodes, ${workflow.edges.length} edges`,
       );
-      
+
       // Custom event #7: workflow.execution.started
-        name: "workflow.execution",
+      logger.debug("workflow.execution", {
         op: "workflow.execute",
         attributes: {
           "workflow.node_count": workflow.nodes.length,
           "workflow.edge_count": workflow.edges.length,
         },
       });
-      
+
+      logger.info("Workflow execution started", {
         category: "workflow",
-        message: "Workflow execution started",
-        level: "info",
         data: {
           nodeCount: workflow.nodes.length,
           edgeCount: workflow.edges.length,
@@ -220,30 +219,32 @@ export const createWorkflowExecutor = (workflow: {
       logger.debug(
         `[${event.eventType}] ${colorize(color, event.isOk ? "SUCCESS" : "FAILED")} ${duration}s`,
       );
-      
+
       // Custom event #8: workflow.execution.completed
       if (workflowSpan) {
         workflowSpan.setAttributes({
           "workflow.success": event.isOk,
           "workflow.duration_ms": event.endedAt - event.startedAt,
         });
-        
+
         if (!event.isOk && event.error) {
           workflowSpan.setStatus({ code: 2, message: "error" });
-            tags: {
-              component: "workflow-executor",
-            },
-            extra: {
-              nodeCount: workflow.nodes.length,
-              edgeCount: workflow.edges.length,
-              duration: event.endedAt - event.startedAt,
-            },
-          });
+          logger.error(event.error);
         }
-        
+
         workflowSpan.end();
+      } else if (event.eventType == "NODE_START") {
+        logger.debug(
+          `[${event.eventType}] ${nodeNameByNodeId.get(event.node.name)}`,
+        );
+      } else if (event.eventType == "NODE_END") {
+        const duration = ((event.endedAt - event.startedAt) / 1000).toFixed(2);
+        const color = event.isOk ? "green" : "red";
+        logger.debug(
+          `[${event.eventType}] ${nodeNameByNodeId.get(event.node.name)} ${color} ${duration}s`,
+        );
       }
-      
+
       if (!event.isOk) {
         logger.error(event.error);
       }

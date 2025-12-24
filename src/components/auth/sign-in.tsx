@@ -46,9 +46,9 @@ export default function SignIn({
 
   const emailAndPasswordSignIn = () => {
     setLoading(true);
-    
+
     // Custom event #1: auth.sign_in.attempt
-    const emailDomain = formData.email.split("@")[1] || "unknown";
+    const _emailDomain = formData.email.split("@")[1] || "unknown";
     safe(() =>
       authClient.signIn.email(
         {
@@ -59,7 +59,7 @@ export default function SignIn({
         {
           onError(ctx) {
             // Custom event #2: auth.sign_in.error
-            
+
             toast.error(ctx.error.message || ctx.error.statusText);
           },
         },
@@ -71,10 +71,17 @@ export default function SignIn({
 
   const handleSocialSignIn = (provider: SocialAuthenticationProvider) => {
     // Custom event #1: auth.sign_in.attempt (social)
+    safe(() =>
+      authClient.signIn.social({
+        provider,
+        callbackURL: "/",
+      }),
+    ).catch((e) => {
       // Custom event #2: auth.sign_in.error (social)
       toast.error(e.error);
     });
   };
+
   return (
     <div className="w-full h-full flex flex-col p-4 md:p-8 justify-center">
       <Card className="w-full md:max-w-md bg-background border-none mx-auto shadow-none animate-in fade-in duration-1000">

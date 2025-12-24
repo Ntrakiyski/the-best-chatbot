@@ -21,8 +21,13 @@ import {
 } from "./storage-utils";
 import { FileNotFoundError } from "lib/errors";
 import { generateUUID } from "lib/utils";
+import globalLogger from "lib/logger";
 
 const STORAGE_PREFIX = resolveStoragePrefix();
+
+const logger = globalLogger.withDefaults({
+  message: "[S3 File Storage]",
+});
 
 const required = (name: string, value: string | undefined) => {
   if (!value) throw new Error(`Missing required env: ${name}`);
@@ -148,7 +153,7 @@ export const createS3FileStorage = (): FileStorage => {
     async download(key) {
       // Custom event #10: file.storage.activity (download)
       const startTime = Date.now();
-      
+
       try {
         const res = await s3.send(
           new GetObjectCommand({ Bucket: bucket, Key: key }),
@@ -165,12 +170,11 @@ export const createS3FileStorage = (): FileStorage => {
           stream.once("error", (e) => reject(e));
         });
         const buffer = Buffer.concat(chunks);
-        
+
         // Track successful download
         const duration = Date.now() - startTime;
+        logger.info("File downloaded", {
           category: "file-storage",
-          message: "File downloaded",
-          level: "info",
           data: {
             driver: "s3",
             operation: "download",
@@ -178,21 +182,20 @@ export const createS3FileStorage = (): FileStorage => {
             duration,
           },
         });
-        
+
         return buffer;
       } catch (error: unknown) {
         const duration = Date.now() - startTime;
-          tags: {
-            component: "file-storage",
+        logger.error("File download failed", {
+          category: "file-storage",
+          data: {
             driver: "s3",
             operation: "download",
-          },
-          extra: {
             key,
             duration,
           },
         });
-        
+
         if ((error as any)?.$metadata?.httpStatusCode === 404) {
           throw new FileNotFoundError(key, error);
         }
@@ -210,6 +213,14 @@ export const createS3FileStorage = (): FileStorage => {
         return true;
       } catch (error: unknown) {
         if ((error as any)?.$metadata?.httpStatusCode === 404) return false;
+        logger.error("File existence check failed", {
+          category: "file-storage",
+          data: {
+            driver: "s3",
+            operation: "exists",
+            key,
+          },
+        });
         return false;
       }
     },
@@ -246,32 +257,30 @@ export const createS3FileStorage = (): FileStorage => {
     async getDownloadUrl(key) {
       // Custom event #10: file.storage.activity (presign)
       const startTime = Date.now();
-      
+
       try {
         const command = new GetObjectCommand({ Bucket: bucket, Key: key });
         const url = await getSignedUrl(s3, command, { expiresIn: 3600 });
-        
+
         // Track successful presign operation
         const duration = Date.now() - startTime;
+        logger.info("Presigned URL generated", {
           category: "file-storage",
-          message: "Presigned URL generated",
-          level: "info",
           data: {
             driver: "s3",
             operation: "presign",
             duration,
           },
         });
-        
+
         return url;
       } catch (error: unknown) {
         const duration = Date.now() - startTime;
-          tags: {
-            component: "file-storage",
+        logger.error("Presigned URL generation failed", {
+          category: "file-storage",
+          data: {
             driver: "s3",
             operation: "presign",
-          },
-          extra: {
             key,
             duration,
           },

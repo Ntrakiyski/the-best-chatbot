@@ -122,20 +122,20 @@ export async function POST(request: Request) {
       );
 
       // Custom event #3: chat.thread.created
-        level: "info",
-        tags: {
+      logger.info("Thread created", {
+        category: "chat",
+        data: {
           component: "chat",
           userId: session.user.id,
-        },
-        extra: {
           threadId: id,
           projectId,
           timestamp: new Date().toISOString(),
         },
       });
+
+      // Custom event #3: chat.thread.created (alternative)
+      logger.info("New chat thread created", {
         category: "chat",
-        message: "New chat thread created",
-        level: "info",
         data: {
           threadId: id,
           hasProject: !!projectId,
@@ -454,10 +454,12 @@ export async function POST(request: Request) {
 
         // Custom event #4: chat.streaming.started
         const streamingStartTime = Date.now();
+        const streamingSpan = undefined; // TODO: Add tracing span when tracing is implemented
         const promptLength = messages.reduce((acc, m) => {
           return acc + (m.parts?.length || 0);
         }, 0);
 
+        logger.debug({
           name: "chat.streaming",
           op: "ai.generate",
           attributes: {

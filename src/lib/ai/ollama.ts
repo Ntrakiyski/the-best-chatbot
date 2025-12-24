@@ -19,17 +19,17 @@ export type OllamaTagsResponse = {
  */
 export function doesOllamaModelSupportTools(modelName: string): boolean {
   const nameLower = modelName.toLowerCase();
-  
+
   // Models known to support tool calling based on name patterns
   const toolSupportPatterns = [
-    "tools",           // e.g., qwen2.5-coder-tools, hhao/qwen2.5-coder-tools
-    "qwen2.5-coder",   // Qwen2.5 coder variants typically support tools
-    "qwen2.5:coder",   // Alternative naming
-    "command-r",       // Cohere Command-R models support tools
-    "mistral-large",   // Mistral Large supports tools
-    "mixtral",         // Mixtral models often support tools
+    "tools", // e.g., qwen2.5-coder-tools, hhao/qwen2.5-coder-tools
+    "qwen2.5-coder", // Qwen2.5 coder variants typically support tools
+    "qwen2.5:coder", // Alternative naming
+    "command-r", // Cohere Command-R models support tools
+    "mistral-large", // Mistral Large supports tools
+    "mixtral", // Mixtral models often support tools
   ];
- 
+
   return toolSupportPatterns.some((pattern) => nameLower.includes(pattern));
 }
 

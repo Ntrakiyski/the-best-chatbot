@@ -43,7 +43,9 @@ test.describe("Project Lifecycle Management", () => {
     await page.waitForLoadState("networkidle");
 
     // Verify tabs exist
-    await expect(page.getByRole("tab", { name: /Active Projects/i })).toBeVisible();
+    await expect(
+      page.getByRole("tab", { name: /Active Projects/i }),
+    ).toBeVisible();
     await expect(
       page.getByRole("tab", { name: /Archived Projects/i }),
     ).toBeVisible();
@@ -115,9 +117,9 @@ test.describe("Project Lifecycle Management", () => {
     await page.getByTestId(`unarchive-${testProjectId}`).click();
 
     // Wait for success toast
-    await expect(
-      page.getByText("Project unarchived successfully"),
-    ).toBeVisible({ timeout: 5000 });
+    await expect(page.getByText("Project unarchived successfully")).toBeVisible(
+      { timeout: 5000 },
+    );
 
     // Verify project is removed from Archived tab
     await expect(archivedCard).not.toBeVisible();
@@ -167,14 +169,18 @@ test.describe("Project Lifecycle Management", () => {
     const versionCard = page.locator('[data-testid^="version-card-"]').first();
     if ((await versionCard.count()) > 0) {
       // Verify version edit/delete buttons are not visible
-      const editButtons = versionCard.locator('button').filter({ has: page.locator('svg') });
+      const editButtons = versionCard
+        .locator("button")
+        .filter({ has: page.locator("svg") });
       await expect(editButtons.first()).not.toBeVisible();
 
       // Verify "Add Deliverable" button is not visible
       await expect(versionCard.getByText("Add Deliverable")).not.toBeVisible();
 
       // Verify status dropdown is disabled
-      const statusDropdown = versionCard.locator('button[role="combobox"]').first();
+      const statusDropdown = versionCard
+        .locator('button[role="combobox"]')
+        .first();
       if ((await statusDropdown.count()) > 0) {
         await expect(statusDropdown).toBeDisabled();
       }
@@ -396,4 +402,3 @@ test.describe("Project Lifecycle Management", () => {
     ).toBeVisible();
   });
 });
-
