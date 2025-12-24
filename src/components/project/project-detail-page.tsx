@@ -51,11 +51,7 @@ import {
   updateDeliverableStatusAction,
   deleteDeliverableAction,
 } from "@/app/api/project/actions";
-import {
-  createFileAction,
-  updateFileAction,
-  deleteFileAction,
-} from "@/app/api/file/actions";
+import { deleteFileAction } from "@/app/api/file/actions";
 import { FileList } from "@/components/file/FileList";
 
 interface ProjectDetailPageProps {
@@ -271,44 +267,6 @@ export default function ProjectDetailPage({
       } catch (_error) {
         toast.error(t("Projects.failedToDeleteDeliverable"));
       }
-    }
-  };
-
-  // Create file
-  const handleCreateFile = async (data: {
-    name: string;
-    content?: string;
-  }) => {
-    try {
-      const file = await createFileAction({
-        projectId,
-        name: data.name,
-        content: data.content,
-      });
-      toast.success(t("File.created") || "File created successfully!");
-      mutate();
-      return file;
-    } catch (error) {
-      console.error("Error creating file:", error);
-      toast.error(t("File.failedToCreate") || "Failed to create file");
-      throw error;
-    }
-  };
-
-  // Update file
-  const handleUpdateFile = async (
-    fileId: string,
-    data: { name?: string; content?: string },
-  ) => {
-    try {
-      const file = await updateFileAction(fileId, data);
-      toast.success(t("File.fileUpdated") || "File updated successfully!");
-      mutate();
-      return file;
-    } catch (error) {
-      console.error("Error updating file:", error);
-      toast.error(t("File.failedToUpdate") || "Failed to update file");
-      throw error;
     }
   };
 
@@ -980,10 +938,9 @@ export default function ProjectDetailPage({
         </div>
 
         <FileList
+          projectId={projectId}
           files={files}
           isLoading={isLoadingFiles}
-          onCreateFile={handleCreateFile}
-          onUpdateFile={handleUpdateFile}
           onDeleteFile={handleDeleteFile}
           readOnly={isArchived}
         />

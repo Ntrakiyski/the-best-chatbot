@@ -46,7 +46,8 @@
     "name": "Name",
     "creating": "Creating...",
     "view": "View",
-    "archived": "Archived"
+    "archived": "Archived",
+    "loading": "Loading..."
   },
   "Error": {},
   "Info": {
@@ -493,7 +494,12 @@
     "cancel": "Cancel",
     "save": "Save",
     "createFileDescription": "Create a new file for your project",
-    "editFileDescription": "Edit your project file"
+    "editFileDescription": "Edit your project file",
+    "backToProject": "Back to project",
+    "newFile": "New File",
+    "savingFile": "Saving file...",
+    "unsavedChanges": "You have unsaved changes",
+    "unsavedChangesDescription": "Are you sure you want to leave? Your changes will be lost."
   },
   "Archive": {
     "title": "Archive",

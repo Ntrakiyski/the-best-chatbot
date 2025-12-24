@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
 import { useTranslations } from "next-intl";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import {
@@ -13,45 +13,31 @@ import {
 import { FileText, MoreVertical, Plus, Trash2, Edit } from "lucide-react";
 import type { ProjectFile } from "app-types/file";
 import { formatDistanceToNow } from "date-fns";
-import { FileEditor } from "./FileEditor";
 
 interface FileListProps {
+  projectId: string;
   files: ProjectFile[];
   isLoading: boolean;
-  onCreateFile: (data: {
-    name: string;
-    content?: string;
-  }) => Promise<ProjectFile>;
-  onUpdateFile: (
-    fileId: string,
-    data: { name?: string; content?: string },
-  ) => Promise<ProjectFile>;
   onDeleteFile: (fileId: string) => Promise<void>;
   readOnly?: boolean;
 }
 
 export function FileList({
+  projectId,
   files,
   isLoading,
-  onCreateFile,
-  onUpdateFile,
   onDeleteFile,
   readOnly = false,
 }: FileListProps) {
   const t = useTranslations();
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const [editingFile, setEditingFile] = useState<ProjectFile | null>(null);
+  const router = useRouter();
 
-  const handleCreate = async (data: { name?: string; content?: string }) => {
-    if (!data.name) return;
-    await onCreateFile({ name: data.name, content: data.content });
-    setIsCreateModalOpen(false);
+  const handleCreateClick = () => {
+    router.push(`/projects/${projectId}/files/new`);
   };
 
-  const handleEdit = async (data: { name?: string; content?: string }) => {
-    if (!editingFile) return;
-    await onUpdateFile(editingFile.id, data);
-    setEditingFile(null);
+  const handleEditClick = (fileId: string) => {
+    router.push(`/projects/${projectId}/files/${fileId}`);
   };
 
   const handleDelete = async (fileId: string) => {
@@ -73,7 +59,7 @@ export function FileList({
       {/* Create File Button */}
       {!readOnly && (
         <Button
-          onClick={() => setIsCreateModalOpen(true)}
+          onClick={handleCreateClick}
           className="w-full"
           variant="outline"
           data-testid="create-file-button"
@@ -105,7 +91,7 @@ export function FileList({
                     <div className="flex-1 min-w-0">
                       <button
                         type="button"
-                        onClick={() => setEditingFile(file)}
+                        onClick={() => handleEditClick(file.id)}
                         className="font-medium text-left hover:underline truncate block w-full"
                         data-testid={`file-name-${file.id}`}
                       >
@@ -134,7 +120,7 @@ export function FileList({
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         <DropdownMenuItem
-                          onClick={() => setEditingFile(file)}
+                          onClick={() => handleEditClick(file.id)}
                           data-testid={`edit-file-${file.id}`}
                         >
                           <Edit className="mr-2 h-4 w-4" />
@@ -156,26 +142,6 @@ export function FileList({
             </Card>
           ))}
         </div>
-      )}
-
-      {/* Create File Modal */}
-      <FileEditor
-        isOpen={isCreateModalOpen}
-        onClose={() => setIsCreateModalOpen(false)}
-        onSave={handleCreate}
-        mode="create"
-      />
-
-      {/* Edit File Modal */}
-      {editingFile && (
-        <FileEditor
-          isOpen={!!editingFile}
-          onClose={() => setEditingFile(null)}
-          onSave={handleEdit}
-          mode="edit"
-          initialName={editingFile.name}
-          initialContent={editingFile.content}
-        />
       )}
     </div>
   );
