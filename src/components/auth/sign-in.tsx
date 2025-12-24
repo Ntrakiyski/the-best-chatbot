@@ -48,7 +48,6 @@ export default function SignIn({
     setLoading(true);
 
     // Custom event #1: auth.sign_in.attempt
-    const _emailDomain = formData.email.split("@")[1] || "unknown";
     safe(() =>
       authClient.signIn.email(
         {
@@ -78,7 +77,7 @@ export default function SignIn({
       }),
     ).catch((e) => {
       // Custom event #2: auth.sign_in.error (social)
-      toast.error(e.error);
+      toast.error((e as any).error);
     });
   };
 

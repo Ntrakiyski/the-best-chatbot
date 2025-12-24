@@ -453,8 +453,7 @@ export async function POST(request: Request) {
         logger.info(`model: ${chatModel?.provider}/${chatModel?.model}`);
 
         // Custom event #4: chat.streaming.started
-        const streamingStartTime = Date.now();
-        const streamingSpan = undefined; // TODO: Add tracing span when tracing is implemented
+        // TODO: Add tracing span when tracing is implemented
         const promptLength = messages.reduce((acc, m) => {
           return acc + (m.parts?.length || 0);
         }, 0);
@@ -491,18 +490,18 @@ export async function POST(request: Request) {
                 metadata.usage = part.totalUsage;
 
                 // Custom event #5: chat.streaming.completed
-                const duration = Date.now() - streamingStartTime;
-                streamingSpan?.setAttributes({
-                  "ai.token_usage.prompt":
-                    (part.totalUsage as any)?.promptTokens || 0,
-                  "ai.token_usage.completion":
-                    (part.totalUsage as any)?.completionTokens || 0,
-                  "ai.token_usage.total":
-                    (part.totalUsage as any)?.totalTokens || 0,
-                  "chat.duration_ms": duration,
-                  "chat.success": true,
-                });
-                streamingSpan?.end();
+                // TODO: Add tracing span when tracing is implemented
+                // streamingSpan?.setAttributes({
+                //   "ai.token_usage.prompt":
+                //     (part.totalUsage as any)?.promptTokens || 0,
+                //   "ai.token_usage.completion":
+                //     (part.totalUsage as any)?.completionTokens || 0,
+                //   "ai.token_usage.total":
+                //     (part.totalUsage as any)?.totalTokens || 0,
+                //   "chat.duration_ms": duration,
+                //   "chat.success": true,
+                // });
+                // streamingSpan?.end();
 
                 return metadata;
               }

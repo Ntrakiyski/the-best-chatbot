@@ -221,33 +221,20 @@ export const createWorkflowExecutor = (workflow: {
       );
 
       // Custom event #8: workflow.execution.completed
-      if (workflowSpan) {
-        workflowSpan.setAttributes({
-          "workflow.success": event.isOk,
-          "workflow.duration_ms": event.endedAt - event.startedAt,
-        });
+      // TODO: Add tracing span when tracing is implemented
+      // if (workflowSpan) {
+      //   workflowSpan.setAttributes({
+      //     "workflow.success": event.isOk,
+      //     "workflow.duration_ms": event.endedAt - event.startedAt,
+      //   });
 
-        if (!event.isOk && event.error) {
-          workflowSpan.setStatus({ code: 2, message: "error" });
-          logger.error(event.error);
-        }
+      //   if (!event.isOk && event.error) {
+      //     workflowSpan.setStatus({ code: 2, message: "error" });
+      //     logger.error(event.error);
+      //   }
 
-        workflowSpan.end();
-      } else if (event.eventType == "NODE_START") {
-        logger.debug(
-          `[${event.eventType}] ${nodeNameByNodeId.get(event.node.name)}`,
-        );
-      } else if (event.eventType == "NODE_END") {
-        const duration = ((event.endedAt - event.startedAt) / 1000).toFixed(2);
-        const color = event.isOk ? "green" : "red";
-        logger.debug(
-          `[${event.eventType}] ${nodeNameByNodeId.get(event.node.name)} ${color} ${duration}s`,
-        );
-      }
-
-      if (!event.isOk) {
-        logger.error(event.error);
-      }
+      //   workflowSpan.end();
+      // }
     } else if (event.eventType == "NODE_START") {
       logger.debug(
         `[${event.eventType}] ${nodeNameByNodeId.get(event.node.name)}`,
