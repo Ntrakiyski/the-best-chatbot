@@ -3,7 +3,10 @@
 import { useState, useRef, useCallback, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { FileEditorHeader } from "@/components/file/FileEditorHeader";
-import { FileEditorContent } from "@/components/file/FileEditorContent";
+import {
+  FileEditorContent,
+  type FileEditorContentRef,
+} from "@/components/file/FileEditorContent";
 import { updateFileAction } from "@/app/api/file/actions";
 import { toast } from "sonner";
 import { useTranslations } from "next-intl";
@@ -28,7 +31,7 @@ function EditFilePageClient({ params }: EditFilePageProps) {
     content: "",
     isDirty: false,
   });
-  const blockNoteEditorRef = useRef<any>(null);
+  const fileEditorRef = useRef<FileEditorContentRef>(null);
 
   // Unwrap params
   useEffect(() => {
@@ -73,9 +76,27 @@ function EditFilePageClient({ params }: EditFilePageProps) {
     try {
       // Get current content from editor if available
       let currentContent = fileData.content;
-      if (blockNoteEditorRef.current?.getCurrentContent) {
-        currentContent = blockNoteEditorRef.current.getCurrentContent();
+      console.log(
+        "💾 handleSave - Initial content from state:",
+        currentContent.substring(0, 100),
+      );
+      console.log(
+        "💾 handleSave - fileEditorRef.current:",
+        fileEditorRef.current,
+      );
+
+      if (fileEditorRef.current?.getCurrentContent) {
+        currentContent = fileEditorRef.current.getCurrentContent();
+        console.log(
+          "💾 handleSave - Content from ref:",
+          currentContent.substring(0, 100),
+        );
       }
+
+      console.log(
+        "💾 handleSave - Final content length:",
+        currentContent.length,
+      );
 
       await updateFileAction(fileId, {
         name: fileData.name.trim(),
@@ -150,6 +171,7 @@ function EditFilePageClient({ params }: EditFilePageProps) {
       />
       <div className="flex-1 overflow-hidden">
         <FileEditorContent
+          ref={fileEditorRef}
           mode="edit"
           initialName={currentFile.name}
           initialContent={currentFile.content}
