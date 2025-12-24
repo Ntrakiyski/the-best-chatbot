@@ -1,4 +1,4 @@
-import { eq, and, desc, sql } from "drizzle-orm";
+import { eq, and, desc } from "drizzle-orm";
 import { pgDb as db } from "../db.pg";
 import { ProjectFileTable, ProjectTable } from "../schema.pg";
 import type {
@@ -7,6 +7,7 @@ import type {
   UpdateFileInput,
   FileRepository,
 } from "app-types/file";
+import type { FileContentType } from "app-types/file";
 
 export const fileRepository: FileRepository = {
   async createFile(input: CreateFileInput): Promise<ProjectFile> {
@@ -43,6 +44,7 @@ export const fileRepository: FileRepository = {
     return {
       ...file,
       size: Number.parseInt(file.size, 10),
+      contentType: file.contentType as FileContentType,
     };
   },
 
@@ -73,6 +75,7 @@ export const fileRepository: FileRepository = {
     return {
       ...result[0].file,
       size: Number.parseInt(result[0].file.size, 10),
+      contentType: result[0].file.contentType as FileContentType,
     };
   },
 
@@ -107,6 +110,7 @@ export const fileRepository: FileRepository = {
     return files.map((file) => ({
       ...file,
       size: Number.parseInt(file.size, 10),
+      contentType: file.contentType as FileContentType,
     }));
   },
 
@@ -149,6 +153,7 @@ export const fileRepository: FileRepository = {
     return {
       ...updatedFile,
       size: Number.parseInt(updatedFile.size, 10),
+      contentType: updatedFile.contentType as FileContentType,
     };
   },
 
@@ -183,6 +188,7 @@ export const fileRepository: FileRepository = {
     return files.map((file) => ({
       ...file,
       size: Number.parseInt(file.size, 10),
+      contentType: file.contentType as FileContentType,
     }));
   },
 };

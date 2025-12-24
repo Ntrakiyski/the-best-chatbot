@@ -18,11 +18,14 @@ import { FileEditor } from "./FileEditor";
 interface FileListProps {
   files: ProjectFile[];
   isLoading: boolean;
-  onCreateFile: (data: { name: string; content?: string }) => Promise<void>;
+  onCreateFile: (data: {
+    name: string;
+    content?: string;
+  }) => Promise<ProjectFile>;
   onUpdateFile: (
     fileId: string,
     data: { name?: string; content?: string },
-  ) => Promise<void>;
+  ) => Promise<ProjectFile>;
   onDeleteFile: (fileId: string) => Promise<void>;
   readOnly?: boolean;
 }
@@ -41,7 +44,7 @@ export function FileList({
 
   const handleCreate = async (data: { name?: string; content?: string }) => {
     if (!data.name) return;
-    await onCreateFile(data);
+    await onCreateFile({ name: data.name, content: data.content });
     setIsCreateModalOpen(false);
   };
 

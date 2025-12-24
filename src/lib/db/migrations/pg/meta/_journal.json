@@ -117,15 +117,8 @@
     {
       "idx": 16,
       "version": "7",
-      "when": 1762464570115,
-      "tag": "0016_add_system_prompt_to_project",
-      "breakpoints": true
-    },
-    {
-      "idx": 17,
-      "version": "7",
       "when": 1766529600049,
-      "tag": "0017_chubby_hemingway",
+      "tag": "0016_chubby_hemingway",
       "breakpoints": true
     }
   ]
