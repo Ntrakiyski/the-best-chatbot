@@ -61,7 +61,6 @@ import { nanoBananaTool, openaiImageTool } from "lib/ai/tools/image";
 import { ImageToolName } from "lib/ai/tools";
 import { buildCsvIngestionPreviewParts } from "@/lib/ai/ingest/csv-ingest";
 import { serverFileStorage } from "lib/file-storage";
-import * as Sentry from "@sentry/nextjs";
 
 const logger = globalLogger.withDefaults({
   message: colorize("blackBright", `Chat API: `),
@@ -123,7 +122,6 @@ export async function POST(request: Request) {
       );
 
       // Custom event #3: chat.thread.created
-      Sentry.captureMessage("chat.thread.created", {
         level: "info",
         tags: {
           component: "chat",
@@ -135,7 +133,6 @@ export async function POST(request: Request) {
           timestamp: new Date().toISOString(),
         },
       });
-      Sentry.addBreadcrumb({
         category: "chat",
         message: "New chat thread created",
         level: "info",
@@ -461,7 +458,6 @@ export async function POST(request: Request) {
           return acc + (m.parts?.length || 0);
         }, 0);
 
-        const streamingSpan = Sentry.startInactiveSpan({
           name: "chat.streaming",
           op: "ai.generate",
           attributes: {

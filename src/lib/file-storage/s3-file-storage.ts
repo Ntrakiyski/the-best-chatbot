@@ -21,7 +21,6 @@ import {
 } from "./storage-utils";
 import { FileNotFoundError } from "lib/errors";
 import { generateUUID } from "lib/utils";
-import * as Sentry from "@sentry/nextjs";
 
 const STORAGE_PREFIX = resolveStoragePrefix();
 
@@ -169,7 +168,6 @@ export const createS3FileStorage = (): FileStorage => {
         
         // Track successful download
         const duration = Date.now() - startTime;
-        Sentry.addBreadcrumb({
           category: "file-storage",
           message: "File downloaded",
           level: "info",
@@ -184,7 +182,6 @@ export const createS3FileStorage = (): FileStorage => {
         return buffer;
       } catch (error: unknown) {
         const duration = Date.now() - startTime;
-        Sentry.captureException(error, {
           tags: {
             component: "file-storage",
             driver: "s3",
@@ -256,7 +253,6 @@ export const createS3FileStorage = (): FileStorage => {
         
         // Track successful presign operation
         const duration = Date.now() - startTime;
-        Sentry.addBreadcrumb({
           category: "file-storage",
           message: "Presigned URL generated",
           level: "info",
@@ -270,7 +266,6 @@ export const createS3FileStorage = (): FileStorage => {
         return url;
       } catch (error: unknown) {
         const duration = Date.now() - startTime;
-        Sentry.captureException(error, {
           tags: {
             component: "file-storage",
             driver: "s3",

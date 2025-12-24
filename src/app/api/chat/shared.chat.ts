@@ -41,7 +41,6 @@ import { NodeKind } from "lib/ai/workflow/workflow.interface";
 import { mcpClientsManager } from "lib/ai/mcp/mcp-manager";
 import { APP_DEFAULT_TOOL_KIT } from "lib/ai/tools/tool-kit";
 import { AppDefaultToolkit } from "lib/ai/tools";
-import * as Sentry from "@sentry/nextjs";
 
 export function filterMCPToolsByMentions(
   tools: Record<string, VercelAIMcpTool>,
@@ -141,7 +140,6 @@ export function manualToolExecuteByLastMessage(
     .map(({ confirm }) => {
       if (!confirm) return MANUAL_REJECT_RESPONSE_PROMPT;
       
-      return Sentry.startSpan(
         {
           name: `tool.invocation.${toolType}`,
           op: "tool.execute",
@@ -176,7 +174,6 @@ export function manualToolExecuteByLastMessage(
     .ifFail((error) => {
       // Track tool failure
       const duration = Date.now() - toolStartTime;
-      Sentry.captureException(error, {
         tags: {
           component: "tool-execution",
           toolName,
@@ -197,7 +194,6 @@ export function manualToolExecuteByLastMessage(
     .map((result) => {
       // Track successful tool execution
       const duration = Date.now() - toolStartTime;
-      Sentry.addBreadcrumb({
         category: "tool",
         message: `Tool executed: ${toolName}`,
         level: "info",
