@@ -26,17 +26,49 @@ export const GET = async () => {
     ? openRouterResult.models || []
     : [];
 
-  // Create a map of OpenRouter API ID to supportsImages for quick lookup
+  // Create maps for quick lookup of model metadata
   const openRouterImageSupport = new Map<string, boolean>();
+  const openRouterDisplayNames = new Map<string, string>();
   openRouterModels.forEach((model) => {
     openRouterImageSupport.set(model.id, model.supportsImages);
+    openRouterDisplayNames.set(model.id, model.name);
   });
 
   // Get all providers and filter OpenRouter models based on preferences
   const providers = customModelProvider.modelsInfo.map((provider) => {
     // Handle OpenRouter provider specially to use dynamic image support data
     if (provider.provider === "openRouter") {
-      // Update models with dynamic image support information
+      // If user has selected specific OpenRouter models, show only those
+      if (selectedOpenRouterModels && selectedOpenRouterModels.size > 0) {
+        // Create dynamic model entries for ALL selected models from the API
+        const dynamicModels = Array.from(selectedOpenRouterModels).map(
+          (apiId) => {
+            // Check if this model supports images from the API data
+            const supportsImages = openRouterImageSupport.get(apiId) ?? false;
+            // Get the display name for better UX
+            const displayName = openRouterDisplayNames.get(apiId);
+
+            return {
+              // Use the API ID as the model name for dynamic models
+              name: apiId,
+              displayName, // Human-readable name for UI display
+              isToolCallUnsupported: false, // Assume OpenRouter models support tools
+              isImageInputUnsupported: !supportsImages,
+              // Enable file upload for models that support vision
+              supportedFileMimeTypes: supportsImages
+                ? [...DEFAULT_FILE_PART_MIME_TYPES]
+                : [],
+            };
+          },
+        );
+
+        return {
+          ...provider,
+          models: dynamicModels,
+        };
+      }
+
+      // If no selections, show the default hardcoded models with updated image support
       const updatedModels = provider.models.map((model) => {
         // Get the OpenRouter API ID for this internal model name
         const openRouterApiId = openRouterModelIdMapping[model.name];
@@ -56,22 +88,9 @@ export const GET = async () => {
         };
       });
 
-      // Filter models based on user preferences if selections were made
-      const filteredModels = selectedOpenRouterModels
-        ? updatedModels.filter((model) => {
-            // Get the OpenRouter API ID for this internal model name
-            const openRouterApiId = openRouterModelIdMapping[model.name];
-
-            // Include model if its API ID is in the selected models
-            return (
-              openRouterApiId && selectedOpenRouterModels.has(openRouterApiId)
-            );
-          })
-        : updatedModels;
-
       return {
         ...provider,
-        models: filteredModels,
+        models: updatedModels,
       };
     }
 
