@@ -57,9 +57,13 @@ export function OpenRouterConfigContent() {
   // Load selected models from preferences
   useEffect(() => {
     if (preferences?.selectedOpenRouterModels) {
+      // If user has saved preferences, use those
       setSelectedModels(new Set(preferences.selectedOpenRouterModels));
+    } else if (models.length > 0) {
+      // If no preferences exist, default to all models selected
+      setSelectedModels(new Set(models.map((m) => m.id)));
     }
-  }, [preferences]);
+  }, [preferences, models]);
 
   const handleToggleModel = (modelId: string) => {
     setSelectedModels((prev) => {
@@ -144,7 +148,7 @@ export function OpenRouterConfigContent() {
         <p className="text-sm text-muted-foreground">
           {t("Chat.OpenRouterConfig.description", {
             defaultValue:
-              "Select which OpenRouter models you want to see in the chat interface. Only selected models will appear in the model dropdown. If no models are selected, all OpenRouter models will be available.",
+              "Select which OpenRouter models you want to see in the chat interface. All models are selected by default. Unselect models you don't want to use. Only selected models will appear in the model dropdown.",
           })}
         </p>
       </div>
