@@ -20,7 +20,6 @@ import { toast } from "sonner";
 import { OpenRouterModelDisplay } from "@/types/openrouter";
 import { fetchOpenRouterModels } from "@/app/actions/openrouter";
 import { UserPreferences } from "@/types/user";
-import { openRouterModelIdMapping } from "lib/ai/model-mapping";
 
 export function OpenRouterConfigContent() {
   const t = useTranslations();
