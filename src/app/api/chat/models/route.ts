@@ -3,6 +3,7 @@ import { getOllamaModels, doesOllamaModelSupportTools } from "lib/ai/ollama";
 import { getSession } from "auth/server";
 import { getUserPreferences } from "lib/user/server";
 import { fetchOpenRouterModels } from "@/app/actions/openrouter";
+import { DEFAULT_FILE_PART_MIME_TYPES } from "lib/ai/file-support";
 
 export const GET = async () => {
   // Get user preferences to filter OpenRouter models
@@ -48,6 +49,10 @@ export const GET = async () => {
         return {
           ...model,
           isImageInputUnsupported: !supportsImages,
+          // Enable file upload for models that support vision
+          supportedFileMimeTypes: supportsImages
+            ? [...DEFAULT_FILE_PART_MIME_TYPES]
+            : model.supportedFileMimeTypes,
         };
       });
 

@@ -129,7 +129,10 @@ export default function PromptInput({
 
   const supportedFileMimeTypes = modelInfo?.supportedFileMimeTypes;
   const canUploadImages =
-    supportedFileMimeTypes?.some((mime) => mime.startsWith("image/")) ?? true;
+    // If the model explicitly supports vision (from API), enable image upload
+    modelInfo?.isImageInputUnsupported === false ||
+    // Otherwise fall back to checking supported MIME types
+    (supportedFileMimeTypes?.some((mime) => mime.startsWith("image/")) ?? false);
 
   const mentions = useMemo<ChatMention[]>(() => {
     if (!threadId) return [];
