@@ -208,6 +208,19 @@ export const customModelProvider = {
       return ollama(model.model);
     }
 
+    // Handle OpenRouter models dynamically - create them on demand
+    if (model.provider === "openRouter") {
+      // First check if it's a predefined model
+      const predefinedModel = allModels.openRouter?.[model.model];
+      if (predefinedModel) {
+        return predefinedModel;
+      }
+
+      // If not predefined, create it dynamically using the OpenRouter API ID
+      // The model.model should be the OpenRouter API ID (e.g., "openai/gpt-4")
+      return openrouter(model.model);
+    }
+
     return allModels[model.provider]?.[model.model] || fallbackModel;
   },
 };

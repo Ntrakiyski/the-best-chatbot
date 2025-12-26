@@ -18,26 +18,31 @@ export const GET = async () => {
     }
   }
 
-  // Get all providers and filter OpenRouter models based on preferences
+  // Get all providers and handle OpenRouter models based on preferences
   const providers = customModelProvider.modelsInfo.map((provider) => {
-    // Only filter OpenRouter provider if user has made selections
-    if (provider.provider === "openRouter" && selectedOpenRouterModels) {
-      // Filter models: only show models whose OpenRouter API ID is in the user's selections
-      const filteredModels = provider.models.filter((model) => {
-        // Get the OpenRouter API ID for this internal model name
-        const openRouterApiId = openRouterModelIdMapping[model.name];
+    // Handle OpenRouter provider specially
+    if (provider.provider === "openRouter") {
+      if (selectedOpenRouterModels && selectedOpenRouterModels.size > 0) {
+        // User has made selections - show only selected models
+        // Create model entries for each selected OpenRouter API ID
+        const selectedModels = Array.from(selectedOpenRouterModels).map((apiId) => ({
+          name: apiId, // Use the API ID as the model name
+          isToolCallUnsupported: false, // Assume tools are supported by default
+          isImageInputUnsupported: true, // Conservative default - no vision support
+          supportedFileMimeTypes: [], // No file support by default
+        }));
 
-        // Include model if its API ID is in the selected models
-        return openRouterApiId && selectedOpenRouterModels.has(openRouterApiId);
-      });
-
-      return {
-        ...provider,
-        models: filteredModels,
-      };
+        return {
+          ...provider,
+          models: selectedModels,
+        };
+      } else {
+        // No user selections - show all predefined models
+        return provider;
+      }
     }
 
-    // For non-OpenRouter providers or when no selections made, return all models
+    // For non-OpenRouter providers, return all models
     return provider;
   });
 
