@@ -20,6 +20,7 @@ import { toast } from "sonner";
 import { OpenRouterModelDisplay } from "@/types/openrouter";
 import { fetchOpenRouterModels } from "@/app/actions/openrouter";
 import { UserPreferences } from "@/types/user";
+import { openRouterModelIdMapping } from "lib/ai/models";
 
 export function OpenRouterConfigContent() {
   const t = useTranslations();
@@ -43,7 +44,17 @@ export function OpenRouterConfigContent() {
       const result = await fetchOpenRouterModels();
 
       if (result.success && result.models) {
-        setModels(result.models);
+        // Get the set of supported OpenRouter API IDs from our mapping
+        const supportedApiIds = new Set(
+          Object.values(openRouterModelIdMapping),
+        );
+
+        // Filter to only show models that are actually supported by the app
+        const supportedModels = result.models.filter((model) =>
+          supportedApiIds.has(model.id),
+        );
+
+        setModels(supportedModels);
       } else {
         setError(result.error || "Failed to load models");
       }
