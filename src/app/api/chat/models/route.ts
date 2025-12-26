@@ -31,56 +31,46 @@ export const GET = async () => {
     openRouterImageSupport.set(model.id, model.supportsImages);
   });
 
-  // Get all providers and handle OpenRouter models based on preferences
+  // Get all providers and filter OpenRouter models based on preferences
   const providers = customModelProvider.modelsInfo.map((provider) => {
-    // Handle OpenRouter provider specially
+    // Handle OpenRouter provider specially to use dynamic image support data
     if (provider.provider === "openRouter") {
-      if (selectedOpenRouterModels && selectedOpenRouterModels.size > 0) {
-        // User has made selections - show only selected models
-        // Create model entries for each selected OpenRouter API ID with dynamic vision support
-        const selectedModels = Array.from(selectedOpenRouterModels).map(
-          (apiId) => {
-            // Check if this model supports images from the API data
-            const supportsImages = openRouterImageSupport.get(apiId) ?? false;
+      // Update models with dynamic image support information
+      const updatedModels = provider.models.map((model) => {
+        // Get the OpenRouter API ID for this internal model name
+        const openRouterApiId = openRouterModelIdMapping[model.name];
 
-            return {
-              name: apiId, // Use the API ID as the model name
-              isToolCallUnsupported: false, // Assume tools are supported by default
-              isImageInputUnsupported: !supportsImages, // Use dynamic vision support data
-              supportedFileMimeTypes: [], // No file support by default
-            };
-          },
-        );
+        // Check if this model supports images from the API data
+        const supportsImages = openRouterApiId
+          ? (openRouterImageSupport.get(openRouterApiId) ?? false)
+          : false;
 
         return {
-          ...provider,
-          models: selectedModels,
+          ...model,
+          isImageInputUnsupported: !supportsImages,
         };
-      } else {
-        // No user selections - show all predefined models with updated vision support
-        const updatedModels = provider.models.map((model) => {
-          // Get the OpenRouter API ID for this internal model name
-          const openRouterApiId = openRouterModelIdMapping[model.name];
+      });
 
-          // Check if this model supports images from the API data
-          const supportsImages = openRouterApiId
-            ? (openRouterImageSupport.get(openRouterApiId) ?? false)
-            : false;
+      // Filter models based on user preferences if selections were made
+      const filteredModels = selectedOpenRouterModels
+        ? updatedModels.filter((model) => {
+            // Get the OpenRouter API ID for this internal model name
+            const openRouterApiId = openRouterModelIdMapping[model.name];
 
-          return {
-            ...model,
-            isImageInputUnsupported: !supportsImages,
-          };
-        });
+            // Include model if its API ID is in the selected models
+            return (
+              openRouterApiId && selectedOpenRouterModels.has(openRouterApiId)
+            );
+          })
+        : updatedModels;
 
-        return {
-          ...provider,
-          models: updatedModels,
-        };
-      }
+      return {
+        ...provider,
+        models: filteredModels,
+      };
     }
 
-    // For non-OpenRouter providers, return all models
+    // For non-OpenRouter providers, return all models as-is
     return provider;
   });
 
