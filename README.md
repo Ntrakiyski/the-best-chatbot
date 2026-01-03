@@ -28,10 +28,12 @@ You only need **one AI Provider API Key** (OpenAI, Claude, Gemini, etc.). Everyt
 ### 🎯 What Makes This Different
 
 • **🗂️ Project-Aware AI** - Link chats to projects for context-aware assistance with tech stacks, deliverables, and custom instructions  
-• **🤖 Multi-AI Support** - Seamlessly switch between OpenAI, Anthropic, Google, xAI, Ollama, and more  
+• **🤖 Multi-AI Support** - Seamlessly switch between OpenAI, Anthropic, Google, xAI, Ollama, OpenRouter (with thousands of models), and more  
+• **🌐 OpenRouter Integration** - Select from thousands of AI models with dynamic model discovery and vision capability detection  
 • **🔧 MCP Protocol** - Extend capabilities with pluggable Model Context Protocol tools  
 • **⚡ Powerful Execution** - Run JS/Python code, search the web, visualize data - all from chat  
 • **🎨 Image Generation** - Create and edit images with AI (OpenAI DALL-E, Google Gemini, xAI Grok)  
+• **📎 Smart File Upload** - Automatic file upload support for all vision-capable models across all providers  
 • **🔄 Visual Workflows** - Build custom automations with a graph-based workflow editor  
 • **👥 Team Collaboration** - Share agents, workflows, and configurations across your team  
 • **🎙️ Voice Assistant** - Real-time voice chat with full tool integration  
@@ -334,7 +336,11 @@ GOOGLE_GENERATIVE_AI_API_KEY=****
 OPENAI_API_KEY=****
 XAI_API_KEY=****
 ANTHROPIC_API_KEY=****
+
+# OpenRouter - Access to 150+ AI models from multiple providers
+# Get your API key at: https://openrouter.ai/keys
 OPENROUTER_API_KEY=****
+
 OLLAMA_BASE_URL=http://localhost:11434/api
 
 
@@ -407,6 +413,12 @@ NOT_ALLOW_ADD_MCP_SERVERS=
 ## 📘 Guides
 
 Step-by-step setup guides for running and configuring better-chatbot.
+
+#### [🌐 OpenRouter Configuration](./docs/tips-guides/openrouter.md)
+
+- How to access 150+ AI models from multiple providers through OpenRouter
+- Dynamic model selection with automatic vision capability detection
+- Smart file upload support for vision-capable models
 
 #### [🔌 MCP Server Setup & Tool Testing](./docs/tips-guides/mcp-server-setup-and-tool-testing.md)
 

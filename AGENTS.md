@@ -44,8 +44,10 @@
         
         Key achievements include:
         • Project-Aware AI System: Architected and implemented a complete project management feature with XML-formatted context injection, enabling the AI to receive structured project information (tech stack, deliverables, custom instructions) dynamically during conversations. This involved database schema design, repository pattern implementation, secure XML formatting with injection protection, and comprehensive test coverage (31 unit tests + 3 E2E tests).
+        • OpenRouter Integration: Designed and implemented a scalable multi-model system supporting 150+ AI models through OpenRouter. Eliminated hardcoded model limitations by creating a dynamic model discovery and selection system. Implemented automatic vision capability detection and smart file upload support for vision-capable models across all providers. The solution maintains backward compatibility while enabling users to access thousands of models without code changes.
+        • Dynamic Model Architecture: Built a flexible model management system where the API dynamically creates model entries from user selections, fetches metadata from OpenRouter, and enables vision capabilities automatically. File upload support intelligently toggles based on real-time API vision data.
         • TDD Approach: Followed strict Test-Driven Development methodology, writing tests before implementation and achieving >90% code coverage across all project feature components.
-        • Bug Resolution: Diagnosed and fixed critical issues in the data flow (e.g., projectId not being returned from repository methods), ensuring end-to-end functionality from database to LLM.
+        • Bug Resolution: Diagnosed and fixed critical issues in the data flow (e.g., projectId not being returned from repository methods, hardcoded model filtering blocking user selections), ensuring end-to-end functionality from database to LLM.
         
         You established and enforced enterprise-level development practices, including a comprehensive E2E test suite (Playwright), a modular repository-based data layer (Drizzle ORM + PostgreSQL), strict type safety (TypeScript), and a fully containerized, CI/CD-ready infrastructure (GitHub Actions, Docker).
     </Experience>
